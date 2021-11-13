@@ -1,0 +1,111 @@
+* {
+  box-sizing: border-box;
+}
+
+.rampart-font {
+  font-family: "Rampart One";
+}
+
+.odibee-font {
+  font-family: "Odibee Sans";
+}
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+}
+
+h1 {
+  font-size: 50px;
+}
+
+h2 {
+  font-size: 40px;
+}
+
+body {
+  background-image: url("./content/fondo.png");
+  margin: 0;
+}
+.root {
+  margin: 0;
+}
+
+.div-root {
+  margin: 0;
+  /* padding: 10px 10px 0px 10px; */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.welcome__main-title {
+  margin: 0;
+  margin-top: 74px;
+  text-align: center;
+  width: 400px;
+}
+
+.hands {
+  display: flex;
+  flex-direction: row;
+  gap: 46px;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.computer-choice {
+  transform: rotate(180deg);
+  animation: transitionIn 3s;
+}
+
+.my-choice {
+  animation: transitionIn 3s;
+}
+
+@keyframes transitionIn {
+  from {
+    opacity: 0;
+    height: 0px;
+  }
+  to {
+    opacity: 1;
+    height: 300px;
+  }
+}
+
+.results__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  padding-top: 40px;
+  height: 100vh;
+}
+
+.match-results__container {
+  position: relative;
+  text-align: center;
+  color: white;
+  font-family: "Odibee sans";
+  font-size: 50px;
+}
+
+.match-results__image-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding-bottom: 20px;
+}
+
+.red {
+  background-color: rgb(255, 0, 0, 0.3);
+}
+
+.green {
+  background-color: hsla(130, 48%, 47%, 0.3);
+}
