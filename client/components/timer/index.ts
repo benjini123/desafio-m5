@@ -83,7 +83,6 @@ export function initTimerComp() {
             if (currentState.myPlay) {
               clearInterval(variable);
             } else {
-              counter = 0;
             }
           }
         }, 1000);

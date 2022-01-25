@@ -7,11 +7,19 @@
     "parcel": "^2.0.0-rc.0"
   },
   "scripts": {
-    "dev": "parcel serve ./src/index.html",
-    "build": "parcel build ./src/index.html --dist-dir build",
-    "deploy": "gh-pages -d build"
+    "dev:front": "parcel serve ./client/index.html",
+    "build:front": "parcel build ./client/index.html",
+    "dev": "nodemon --watch './client/index.ts' --exec 'ts-node dev.ts'",
+    "test": "ava",
+    "build:api": "tsc ./server/index.ts",
+    "build": "yarn build:front && yarn build:api",
+    "start": "node index.js"
   },
   "dependencies": {
+    "@vaadin/router": "^1.7.4",
+    "express": "^4.17.2",
+    "firebase": "^9.6.4",
+    "firebase-admin": "^10.0.2",
     "gh-pages": "^3.2.3"
   }
 }

@@ -13,9 +13,7 @@ export function initButtonComp() {
 
         div.innerHTML = `
         
-        <button class="button-element" href="${this.getAttribute("href")}">${
-          this.innerText
-        }</button>
+        <button class="button-element">${this.textContent}</button>
         `;
 
         style.innerHTML = `
@@ -23,7 +21,8 @@ export function initButtonComp() {
         .button-element{
           background-color: #006CFC;
           height: 87px;
-          width: 322px;
+          width: 100%;
+          min-width: 327px;
           font-family: "Odibee Sans";
           font-size: 45px;
           font-weight: 400;

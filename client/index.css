@@ -17,7 +17,7 @@ h4 {
 }
 
 h1 {
-  font-size: 50px;
+  font-size: 60px;
 }
 
 h2 {
@@ -47,6 +47,12 @@ body {
   margin-top: 74px;
   text-align: center;
   width: 400px;
+}
+
+.welcome__button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .hands {
