@@ -1,5 +1,3 @@
-import { initButtonComp } from "./components/button";
-import { initInputComp } from "./components/input";
 import { initPlayComp } from "./components/jugada";
 import { initTimerComp } from "./components/timer";
 import { state } from "./state";
@@ -13,10 +11,9 @@ import "./pages/ganaste";
 import "./pages/perdiste";
 import "./pages/sala";
 import "./pages/nombre";
+import "./pages/espera";
 
 (function () {
-  initButtonComp();
-  initInputComp();
   initPlayComp();
   initTimerComp();
   initScoreComp();

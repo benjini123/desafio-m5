@@ -3,14 +3,18 @@ import { json } from "body-parser";
 import { firestore, rtdb } from "./db";
 import { v4 as uuidv4 } from "uuid";
 import { set, ref, push, getDatabase } from "firebase/database";
+import * as cors from "cors";
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 4006;
 const app = express();
 
 app.use(express.json());
+// app.use(express.static(__dirname + "./"));
 
-console.log(process.env.PORT);
-app.use(express.static(__dirname + "./assets"));
+// var corsOptions = {
+//   origin: "http://localhost:3457",
+// };
+app.use(cors());
 
 const userCollection = firestore.collection("users");
 const roomsCollection = firestore.collection("rooms");
@@ -45,17 +49,17 @@ app.post("/signup", (req, res) => {
   res.json(req.body);
 });
 
-//busca en firestore que documento tiene ese e-mail y devuelve su id LARGO
-//
+//busca en firestore que usuario tiene ese nombre y si ya existe devuelve su id LARGO, sino lo crea
 app.post("/auth", (req, res) => {
-  const { email } = req.body;
+  const { name } = req.body;
   userCollection
-    .where("email", "==", email)
+    .where("name", "==", name)
     .get()
     .then((searchResponse) => {
       if (searchResponse.empty) {
-        res.status(404).json({
-          message: "not found",
+        userCollection.add({ name });
+        res.status(200).json({
+          message: "User added succesfully",
         });
       } else {
         res.json({

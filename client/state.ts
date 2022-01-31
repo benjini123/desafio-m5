@@ -4,6 +4,9 @@ type Result = "win" | "lose";
 
 export const state = {
   data: {
+    rtdbData: {},
+    roomId: "",
+    name: "",
     currentGame: {
       myPlay: "",
       computerPlay: "",
@@ -22,10 +25,38 @@ export const state = {
       state.setState(localData);
     }
   },
+  listenDatabase() {
+    // Connection with RTDB
+    // const rtdbRef = rtdb.ref(`rooms/${this.data.roomId}`);
+    // rtdbRef.on("value", (snapshot) => {
+    //   const currentState = this.getState();
+    //   const value = snapshot.val();
+    //   currentState.rtdbData = value.currentGame;
+    //   this.saveData(currentState);
+    // });
+  },
+  setName(name) {
+    const currentState = state.getState();
+    currentState.name = name;
+    fetch("http://localhost:4006/auth", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      mode: "no-cors",
+      body: JSON.stringify(name),
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        response.json();
+        state.setState(currentState);
+      });
+  },
   getState() {
     const games = state.data;
     return games;
   },
+
   setState(newState: any) {
     this.data = newState;
     localStorage.setItem("saved-plays", JSON.stringify(newState));

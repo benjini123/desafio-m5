@@ -11,7 +11,7 @@ customElements.define(
       this.addListeners();
     }
     addListeners() {
-      const buttonEl = this.querySelector(".button");
+      const buttonEl = this.querySelector(".button-element");
       buttonEl.addEventListener("click", (e) => {
         e.preventDefault;
         Router.go("/instructions");
@@ -22,8 +22,8 @@ customElements.define(
 
       <h1 class="welcome__main-title rampart-font">Rock paper scissors!</h1>
       <form class="welcome__button-container">
-        <input-comp placeholder="codigo"></input-comp>
-        <button-comp class="button">ingresar a una sala</button-comp>
+        <input class="input-element" placeholder="codigo"></input>
+        <button class="button-element">ingresar a una sala</button>
       </form>
       <div class="hands">
         <play-comp jugada="rock"></play-comp>

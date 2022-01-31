@@ -115,3 +115,32 @@ body {
 .green {
   background-color: hsla(130, 48%, 47%, 0.3);
 }
+
+.button-element {
+  background-color: #006cfc;
+  height: 87px;
+  width: 327px;
+  font-family: "Odibee Sans";
+  font-size: 45px;
+  font-weight: 400;
+  border: 10px solid #001997;
+  border-radius: 10px;
+  color: #d8fcfc;
+}
+
+.input-element {
+  height: 84px;
+  max-width: 327px;
+  width: 100%;
+  font-family: "Odibee Sans";
+  font-size: 45px;
+  font-weight: 400;
+  border: 10px solid #001997;
+  border-radius: 10px;
+  padding: 0;
+}
+
+.welcome__label-input-box {
+  display: flex;
+  flex-direction: column;
+}

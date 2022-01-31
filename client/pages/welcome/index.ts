@@ -27,8 +27,8 @@ customElements.define(
 
       <h1 class="welcome__main-title rampart-font">Rock paper scissors!</h1>
       <div class="welcome__button-container">
-        <button-comp class="button-sala">Nuevo Juego</button-comp>
-        <button-comp class="button-juego-nuevo">ingresar a una sala</button-comp>
+        <button class="button-sala button-element">Nuevo Juego</button>
+        <button class="button-juego-nuevo button-element">ingresar a una sala</button>
       </div>
       <div class="hands">
         <play-comp jugada="rock"></play-comp>
