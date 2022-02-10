@@ -13,15 +13,17 @@ customElements.define(
     }
     addListeners() {
       const formEl = this.querySelector(".welcome__button-container");
-      const buttonCompEl = this.querySelector(".button");
-      const inputEl = this.querySelector(".input-element");
 
       formEl.addEventListener("submit", (e: any) => {
         e.preventDefault;
-        console.log("Clicked");
         const name = e.target.input.value;
-        state.setName(name);
         console.log(name);
+        const userId = state.setName(name);
+        userId.then((data) => {
+          console.log("hi", data);
+          return data;
+        });
+
         Router.go("/espera");
       });
     }

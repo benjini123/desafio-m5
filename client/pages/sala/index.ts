@@ -22,6 +22,7 @@ customElements.define(
 
       <h1 class="welcome__main-title rampart-font">Rock paper scissors!</h1>
       <form class="welcome__button-container">
+        <input class="input-element" placeholder="nombre"></input>
         <input class="input-element" placeholder="codigo"></input>
         <button class="button-element">ingresar a una sala</button>
       </form>

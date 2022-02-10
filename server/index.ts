@@ -9,11 +9,18 @@ const port = process.env.PORT || 4006;
 const app = express();
 
 app.use(express.json());
-// app.use(express.static(__dirname + "./"));
-
-// var corsOptions = {
-//   origin: "http://localhost:3457",
-// };
+app.use(function (req, res) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3458");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-Requested-With,content-type"
+  );
+});
 app.use(cors());
 
 const userCollection = firestore.collection("users");
@@ -72,38 +79,45 @@ app.post("/auth", (req, res) => {
 // le pasa el id largo del usuario y se fija si en la colleccion de usuarios esta ese id y si existe crea un nuevo room con un id random
 app.post("/rooms", (req, res) => {
   const { userId } = req.body;
-  userCollection
-    .doc(userId.toString())
+  roomsCollection
+    .where("owner", "==", userId)
     .get()
-    .then((doc) => {
-      if (doc.exists) {
-        const roomRef = rtdb.ref("/chatrooms/" + uuidv4());
-        roomRef
-          .set({
-            messages: [],
+    .then((searchResponse) => {
+      if (searchResponse.empty) {
+        roomsCollection
+          .add({
             owner: userId,
+            id: uuidv4().substring(0, 6),
           })
-          .then(() => {
-            const roomLongId = roomRef.key;
-            const roomId = 1000 + Math.floor(Math.random() * 999);
-            roomsCollection
-              .doc(roomId.toString())
-              .set({
-                rtdbRoomId: roomLongId,
-              })
-              .then(() => {
-                res.json({
-                  id: roomId.toString(),
-                });
-              });
+          .then((data) => {
+            console.log(data.id);
+            res.json({ roomLongId: data.id });
           });
       } else {
-        res.status(401).json({
-          message: "no existiss",
+        res.json({
+          roomId: searchResponse.docs[0].id,
         });
       }
     });
 });
+
+// const roomRef = rtdb.ref("/rooms/" + uuidv4());
+//         roomRef.set({}).then(() => {
+//           const roomLongId = roomRef.key;
+//           const roomId = 1000 + Math.floor(Math.random() * 999);
+//           roomsCollection
+//             .doc(roomId.toString())
+//             .set({
+//               rtdbRoomId: roomLongId,
+//             })
+//             .then(() => {
+//               res.json({
+//                 id: roomId.toString(),
+//               });
+//             });
+//         });
+//       } else {
+//       }
 
 app.get("/rooms/:roomId", (req, res) => {
   const { userId } = req.query;

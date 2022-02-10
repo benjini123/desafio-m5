@@ -1,3 +1,6 @@
+import { stat } from "fs";
+
+// import { rtdb } from "../server/db";
 type Jugada = "rock" | "paper" | "scissors";
 type Game = { myPlay: Jugada; computerPlay: Jugada };
 type Result = "win" | "lose";
@@ -25,31 +28,46 @@ export const state = {
       state.setState(localData);
     }
   },
-  listenDatabase() {
-    // Connection with RTDB
-    // const rtdbRef = rtdb.ref(`rooms/${this.data.roomId}`);
-    // rtdbRef.on("value", (snapshot) => {
-    //   const currentState = this.getState();
-    //   const value = snapshot.val();
-    //   currentState.rtdbData = value.currentGame;
-    //   this.saveData(currentState);
-    // });
-  },
-  setName(name) {
+  // listenDatabase() {
+  //   const rtdbRef = rtdb.ref(`rooms/${this.data.roomId}`);
+  //   rtdbRef.on("value", (snapshot) => {
+  //     const currentState = this.getState();
+  //     const value = snapshot.val();
+  //     currentState.rtdbData = value.currentGame;
+  //     this.saveData(currentState);
+  //   });
+  // },
+  async setName(name) {
     const currentState = state.getState();
-    currentState.name = name;
-    fetch("http://localhost:4006/auth", {
-      method: "POST",
+    const resSetName = await fetch("http://localhost:4006/auth", {
+      method: "post",
       headers: {
         "Content-Type": "application/json",
       },
-      mode: "no-cors",
-      body: JSON.stringify(name),
+      body: JSON.stringify({ name }),
+    });
+    const resSetNameData = await resSetName.json();
+
+    this.setState({
+      ...currentState,
+      name: resSetNameData.name,
+    });
+    return resSetNameData;
+  },
+
+  setRoom(playerId) {
+    const currentState = state.getState();
+    return fetch("http://localhost:4006/rooms", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(playerId),
     })
       .then((res) => res.json())
       .then((response) => {
-        response.json();
-        state.setState(currentState);
+        currentState.roomId = response.roomLongId || response.id;
+        return response.roomLongId;
       });
   },
   getState() {

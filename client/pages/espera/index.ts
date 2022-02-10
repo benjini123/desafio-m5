@@ -1,4 +1,5 @@
 import { Router } from "@vaadin/router";
+import { state } from "../../state";
 
 customElements.define(
   "espera-page",
@@ -8,26 +9,34 @@ customElements.define(
     }
     connectedCallback() {
       this.render();
-      this.addListeners();
     }
     addListeners() {
-      const buttonEl = this.querySelector(".button-element");
-      buttonEl.addEventListener("click", (e) => {
-        e.preventDefault;
-        Router.go("/instructions");
-      });
+      
+      const e = "";
     }
     render() {
       const codigo = "hi";
       this.innerHTML = `
-
-      <h2 class="welcome__main-title rampart-font">Compartí el código:</h2>
-      <h2>${codigo}</h2>
-      <h2 class="welcome__main-title rampart-font">Con tu contrincante</h2>
-      <form class="welcome__button-container">
-        <input class="input-element" placeholder="codigo"></input>
-        <button class="button-element">ingresar a una sala</button>
-      </form>
+       
+      <header class="espera__header">
+        <div class="espera__jugadores">
+          <p>${state.getState().name}: ${
+        state.getState().history.previousGames.won
+      }</p>  
+          <p>${state.getState().name}: ${
+        state.getState().history.previousGames.lost
+      }</p>
+        </div>
+        <div>
+          <p style="fontWeight:bold">SALA</p>
+          <p>${codigo}</p>
+        </div>
+      </header>
+      <div class="espera__text-box">
+        <h2 class="welcome__main-title rampart-font">Compartí el código:</h2>
+        <h2>${codigo}</h2>
+        <h2 class="welcome__main-title rampart-font">Con tu contrincante</h2>
+      </div>
       <div class="hands">
         <play-comp jugada="rock"></play-comp>
         <play-comp jugada="paper"></play-comp>
