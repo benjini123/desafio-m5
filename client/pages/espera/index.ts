@@ -10,12 +10,8 @@ customElements.define(
     connectedCallback() {
       this.render();
     }
-    addListeners() {
-      
-      const e = "";
-    }
+    addListeners() {}
     render() {
-      const codigo = "hi";
       this.innerHTML = `
        
       <header class="espera__header">
@@ -23,18 +19,18 @@ customElements.define(
           <p>${state.getState().name}: ${
         state.getState().history.previousGames.won
       }</p>  
-          <p>${state.getState().name}: ${
+          <p>${state.getState().otherPlayerName}: ${
         state.getState().history.previousGames.lost
       }</p>
         </div>
         <div>
           <p style="fontWeight:bold">SALA</p>
-          <p>${codigo}</p>
+          <p>${state.getState().roomShortId}</p>
         </div>
       </header>
       <div class="espera__text-box">
         <h2 class="welcome__main-title rampart-font">Compartí el código:</h2>
-        <h2>${codigo}</h2>
+        <h2>${state.getState().roomShortId}</h2>
         <h2 class="welcome__main-title rampart-font">Con tu contrincante</h2>
       </div>
       <div class="hands">

@@ -4,24 +4,15 @@ import { firestore, rtdb } from "./db";
 import { v4 as uuidv4 } from "uuid";
 import { set, ref, push, getDatabase } from "firebase/database";
 import * as cors from "cors";
+import * as path from "path";
+import { state } from "../client/state";
 
 const port = process.env.PORT || 4006;
-const app = express();
 
+const app = express();
 app.use(express.json());
-app.use(function (req, res) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3458");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-Requested-With,content-type"
-  );
-});
 app.use(cors());
+app.use(express.static("dist"));
 
 const userCollection = firestore.collection("users");
 const roomsCollection = firestore.collection("rooms");
@@ -64,9 +55,10 @@ app.post("/auth", (req, res) => {
     .get()
     .then((searchResponse) => {
       if (searchResponse.empty) {
-        userCollection.add({ name });
-        res.status(200).json({
-          message: "User added succesfully",
+        userCollection.add({ name }).then((docRef) => {
+          res.json({
+            id: docRef.id,
+          });
         });
       } else {
         res.json({
@@ -76,7 +68,7 @@ app.post("/auth", (req, res) => {
     });
 });
 
-// le pasa el id largo del usuario y se fija si en la colleccion de usuarios esta ese id y si existe crea un nuevo room con un id random
+// le pasa el id largo del usuario y se fija si en la colleccion de rooms si esta ese id asociado a algun rooom y si no existe crea un nuevo room con un id random
 app.post("/rooms", (req, res) => {
   const { userId } = req.body;
   roomsCollection
@@ -90,8 +82,24 @@ app.post("/rooms", (req, res) => {
             id: uuidv4().substring(0, 6),
           })
           .then((data) => {
-            console.log(data.id);
-            res.json({ roomLongId: data.id });
+            const roomId = data.id;
+            const realtimeRoomRef = rtdb.ref(`/chatrooms/${roomId}`).set({
+              currentGame: {
+                player1: {
+                  choice: "",
+                  id: `${userId}`,
+                  online: true,
+                  start: true,
+                },
+                player2: {
+                  choice: "",
+                  id: "",
+                  online: false,
+                  start: false,
+                },
+              },
+            });
+            res.json({ roomId });
           });
       } else {
         res.json({
@@ -101,7 +109,21 @@ app.post("/rooms", (req, res) => {
     });
 });
 
-// const roomRef = rtdb.ref("/rooms/" + uuidv4());
+app.get("/rooms/:roomId", (req, res) => {
+  const { roomId } = req.params;
+  // console.log(roomId);
+  roomsCollection
+    .doc(`${roomId}`)
+    .get()
+    .then((doc) => {
+      const shortId = doc.get("id");
+      // console.log(shortId);
+      res.json({
+        shortId,
+      });
+    });
+});
+
 //         roomRef.set({}).then(() => {
 //           const roomLongId = roomRef.key;
 //           const roomId = 1000 + Math.floor(Math.random() * 999);
@@ -141,6 +163,10 @@ app.get("/rooms/:roomId", (req, res) => {
         });
       }
     });
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../dist/index.html"));
 });
 
 app.listen(port, () => {

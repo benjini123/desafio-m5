@@ -1,6 +1,7 @@
-import { stat } from "fs";
+import { rtdb } from "../server/db";
 
-// import { rtdb } from "../server/db";
+const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:4006";
+
 type Jugada = "rock" | "paper" | "scissors";
 type Game = { myPlay: Jugada; computerPlay: Jugada };
 type Result = "win" | "lose";
@@ -8,8 +9,10 @@ type Result = "win" | "lose";
 export const state = {
   data: {
     rtdbData: {},
-    roomId: "",
+    roomLongId: "",
+    roomShortId: "",
     name: "",
+    otherPlayerName: "",
     currentGame: {
       myPlay: "",
       computerPlay: "",
@@ -28,17 +31,20 @@ export const state = {
       state.setState(localData);
     }
   },
-  // listenDatabase() {
-  //   const rtdbRef = rtdb.ref(`rooms/${this.data.roomId}`);
-  //   rtdbRef.on("value", (snapshot) => {
-  //     const currentState = this.getState();
-  //     const value = snapshot.val();
-  //     currentState.rtdbData = value.currentGame;
-  //     this.saveData(currentState);
-  //   });
-  // },
+  listenDatabase() {
+    const rtdbRef = rtdb.ref(`chatrooms/${this.data.roomLongId}`);
+    rtdbRef.on("value", (snapshot) => {
+      const currentState = this.getState();
+      const value = snapshot.val();
+      currentState.rtdbData = value.currentGame;
+      this.saveData(currentState);
+    });
+  },
   async setName(name) {
-    const currentState = state.getState();
+    const currentState = this.getState();
+    currentState.name = name;
+    this.setState(currentState);
+
     const resSetName = await fetch("http://localhost:4006/auth", {
       method: "post",
       headers: {
@@ -48,28 +54,42 @@ export const state = {
     });
     const resSetNameData = await resSetName.json();
 
-    this.setState({
-      ...currentState,
-      name: resSetNameData.name,
-    });
     return resSetNameData;
   },
 
-  setRoom(playerId) {
+  async setRoom(userId) {
     const currentState = state.getState();
-    return fetch("http://localhost:4006/rooms", {
+
+    const resSetRoom = await fetch("http://localhost:4006/rooms", {
       method: "post",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(playerId),
-    })
-      .then((res) => res.json())
-      .then((response) => {
-        currentState.roomId = response.roomLongId || response.id;
-        return response.roomLongId;
-      });
+      body: JSON.stringify({ userId }),
+    });
+    const resSetRoomData = await resSetRoom.json();
+    currentState.roomLongId = resSetRoomData.roomId;
+    state.setState(currentState);
+    return resSetRoomData.roomId;
   },
+
+  async setRoomShortId(roomLongId) {
+    const currentState = state.getState();
+    const resShortId = await fetch(
+      `http://localhost:4006/rooms/${roomLongId}`,
+      {
+        method: "get",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const resShortIdData = await resShortId.json();
+    console.log(resShortIdData);
+    currentState.roomShortId = resShortIdData.shortId;
+    state.setState(currentState);
+  },
+
   getState() {
     const games = state.data;
     return games;

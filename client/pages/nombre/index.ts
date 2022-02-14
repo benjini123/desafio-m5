@@ -18,12 +18,13 @@ customElements.define(
         e.preventDefault;
         const name = e.target.input.value;
         console.log(name);
-        const userId = state.setName(name);
-        userId.then((data) => {
-          console.log("hi", data);
-          return data;
+        state.setName(name).then((data) => {
+          console.log(data);
+          state.setRoom(data.id).then((res) => {
+            console.log(res);
+            state.setRoomShortId(res);
+          });
         });
-
         Router.go("/espera");
       });
     }
