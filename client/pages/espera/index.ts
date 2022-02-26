@@ -1,25 +1,38 @@
 import { Router } from "@vaadin/router";
+import { rtdb } from "../../../server/rtdb";
 import { state } from "../../state";
 
 customElements.define(
   "espera-page",
   class extends HTMLElement {
+    rtdbData: any;
     constructor() {
       super();
+      this.rtdbData = state.getState().rtdbData;
     }
     connectedCallback() {
+      console.log(this.rtdbData.currentGame.player2.name);
+      console.log(this.rtdbData);
       this.render();
+      state.subscribe(() => {
+        const { playerTwoOnline } = state.getState();
+        console.log(playerTwoOnline);
+        if (playerTwoOnline == true && playerTwoOnline != undefined) {
+          Router.go("/instructions");
+        } else {
+          this.render();
+        }
+      });
     }
-    addListeners() {}
     render() {
       this.innerHTML = `
-       
+        
       <header class="espera__header">
         <div class="espera__jugadores">
           <p>${state.getState().name}: ${
         state.getState().history.previousGames.won
       }</p>  
-          <p>${state.getState().otherPlayerName}: ${
+          <p>${this.rtdbData.currentGame.player2.name}: ${
         state.getState().history.previousGames.lost
       }</p>
         </div>

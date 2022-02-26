@@ -26,7 +26,7 @@ customElements.define(
       this.innerHTML = `
 
       <h1 class="welcome__main-title rampart-font">Rock paper scissors!</h1>
-      <div class="welcome__button-container">
+      <div class="welcome__form-container">
         <button class="button-sala button-element">Nuevo Juego</button>
         <button class="button-juego-nuevo button-element">ingresar a una sala</button>
       </div>

@@ -1,4 +1,5 @@
 import { Router } from "@vaadin/router";
+import { stat } from "fs";
 import { state } from "../../state";
 
 customElements.define(
@@ -9,29 +10,29 @@ customElements.define(
     }
     connectedCallback() {
       this.render();
-      this.addListeners();
     }
     addListeners() {
-      const formEl = this.querySelector(".welcome__button-container");
+      const formEl = this.querySelector(".welcome__form-container");
 
       formEl.addEventListener("submit", (e: any) => {
-        e.preventDefault;
+        e.preventDefault();
         const name = e.target.input.value;
-        console.log(name);
-        state.setName(name).then((data) => {
-          console.log(data);
-          state.setRoom(data.id).then((res) => {
-            console.log(res);
-            state.setRoomShortId(res);
+        state.setName(name).then((userId) => {
+          console.log(userId);
+          state.setRoom(userId.id).then((roomLongId) => {
+            console.log(roomLongId);
+            state.setRoomShortId(roomLongId).then((res) => {
+              state.listenDatabase();
+              Router.go("/espera");
+            });
           });
         });
-        Router.go("/espera");
       });
     }
     render() {
       this.innerHTML = `
       <h2 class="rampart-font welcome__main-title ">Rock paper scissors</h2>
-      <form class="welcome__button-container" >
+      <form class="welcome__form-container" >
         <div class="welcome__label-input-box">
           <label for="input" style="font-size:48px" class="odibee-font">tu nombre</label>
           <input id="input" name="input" class="input-element" placeholder="nombre"></input>
@@ -45,6 +46,7 @@ customElements.define(
       </div>
       `;
       this.className = "div-root";
+      this.addListeners();
     }
   }
 );

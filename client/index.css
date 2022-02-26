@@ -53,7 +53,7 @@ body {
   width: 400px;
 }
 
-.welcome__button-container {
+.welcome__form-container {
   display: flex;
   flex-direction: column;
   gap: 20px;

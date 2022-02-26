@@ -1,4 +1,6 @@
-import { rtdb } from "../server/db";
+import { rtdb } from "../server/rtdb";
+import { ref, onValue } from "firebase/database";
+import { response } from "express";
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:4006";
 
@@ -12,7 +14,8 @@ export const state = {
     roomLongId: "",
     roomShortId: "",
     name: "",
-    otherPlayerName: "",
+    playerTwoName: "",
+    playerTwoOnline: false,
     currentGame: {
       myPlay: "",
       computerPlay: "",
@@ -32,12 +35,15 @@ export const state = {
     }
   },
   listenDatabase() {
-    const rtdbRef = rtdb.ref(`chatrooms/${this.data.roomLongId}`);
-    rtdbRef.on("value", (snapshot) => {
+    console.log(this.data.roomLongId);
+    const rtdbRef = ref(rtdb, `chatrooms/${this.data.roomLongId}`);
+    onValue(rtdbRef, (snapshot) => {
+      console.log("1234");
       const currentState = this.getState();
       const value = snapshot.val();
-      currentState.rtdbData = value.currentGame;
-      this.saveData(currentState);
+      currentState.rtdbData = value;
+      this.setState(currentState);
+      console.log(state.data);
     });
   },
   async setName(name) {
@@ -65,18 +71,18 @@ export const state = {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ userId }),
+      body: JSON.stringify({ userId, userName: this.getState().name }),
     });
     const resSetRoomData = await resSetRoom.json();
     currentState.roomLongId = resSetRoomData.roomId;
     state.setState(currentState);
-    return resSetRoomData.roomId;
+    return resSetRoomData;
   },
 
   async setRoomShortId(roomLongId) {
     const currentState = state.getState();
     const resShortId = await fetch(
-      `http://localhost:4006/rooms/${roomLongId}`,
+      `http://localhost:4006/rooms/${roomLongId.roomId}`,
       {
         method: "get",
         headers: {
@@ -85,14 +91,39 @@ export const state = {
       }
     );
     const resShortIdData = await resShortId.json();
-    console.log(resShortIdData);
     currentState.roomShortId = resShortIdData.shortId;
     state.setState(currentState);
+    console.log(resShortIdData);
+  },
+
+  async goToRoom(name, shortId) {
+    const currentState = state.getState();
+
+    const nameIdRes = await fetch(`http://localhost:4006/sala`, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, shortId }),
+    }).then((res) => {
+      if (res.status >= 400 && res.status < 600) {
+        alert(
+          "Ups, esta sala está completa y tu nombre no coincide con nadie en la sala."
+        );
+      } else {
+        currentState.playerTwoOnline = true;
+        currentState.playerTwoName = name;
+        this.setState(currentState);
+        return res;
+      }
+    });
+    const resShortIdData = await nameIdRes.json();
+    return resShortIdData;
   },
 
   getState() {
-    const games = state.data;
-    return games;
+    const data = this.data;
+    return data;
   },
 
   setState(newState: any) {
