@@ -1,6 +1,8 @@
-import { rtdb } from "../server/rtdb";
-import { ref, onValue } from "firebase/database";
+import { rtdb } from "./rtdb";
+import { ref, onValue, get, child, getDatabase } from "firebase/database";
 import { response } from "express";
+import { on } from "process";
+import { json } from "body-parser";
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:4006";
 
@@ -35,12 +37,15 @@ export const state = {
     }
   },
   listenDatabase() {
-    console.log(this.data.roomLongId);
-    const rtdbRef = ref(rtdb, `chatrooms/${this.data.roomLongId}`);
+    const cs = this.getState();
+    const longId = cs.roomLongId;
+
+    const rtdbRef = ref(rtdb, `chatrooms/${longId}`);
     onValue(rtdbRef, (snapshot) => {
       console.log("1234");
       const currentState = this.getState();
       const value = snapshot.val();
+      console.log(value);
       currentState.rtdbData = value;
       this.setState(currentState);
       console.log(state.data);
@@ -63,7 +68,7 @@ export const state = {
     return resSetNameData;
   },
 
-  async setRoom(userId) {
+  async setRoomLongId(userId) {
     const currentState = state.getState();
 
     const resSetRoom = await fetch("http://localhost:4006/rooms", {
@@ -98,6 +103,7 @@ export const state = {
 
   async goToRoom(name, shortId) {
     const currentState = state.getState();
+    currentState.roomShortId = shortId;
 
     const nameIdRes = await fetch(`http://localhost:4006/sala`, {
       method: "post",
@@ -113,11 +119,14 @@ export const state = {
       } else {
         currentState.playerTwoOnline = true;
         currentState.playerTwoName = name;
-        this.setState(currentState);
         return res;
       }
     });
     const resShortIdData = await nameIdRes.json();
+    currentState.roomLongId = resShortIdData.roomLongId;
+    console.log(resShortIdData.roomLongId);
+    console.log(currentState);
+    state.setState(currentState);
     return resShortIdData;
   },
 

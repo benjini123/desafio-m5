@@ -1,5 +1,4 @@
 import { Router } from "@vaadin/router";
-import { stat } from "fs";
 import { state } from "../../state";
 
 customElements.define(
@@ -17,12 +16,15 @@ customElements.define(
       formEl.addEventListener("submit", (e: any) => {
         e.preventDefault();
         const name = e.target.input.value;
+        this.querySelector(".loader").toggleAttribute("visible");
+        // this.render();
         state.setName(name).then((userId) => {
           console.log(userId);
-          state.setRoom(userId.id).then((roomLongId) => {
+          //data.roomLongId
+          state.setRoomLongId(userId).then((roomLongId) => {
             console.log(roomLongId);
-            state.setRoomShortId(roomLongId).then((res) => {
-              state.listenDatabase();
+            state.listenDatabase();
+            state.setRoomShortId(roomLongId).then(() => {
               Router.go("/espera");
             });
           });
@@ -32,6 +34,7 @@ customElements.define(
     render() {
       this.innerHTML = `
       <h2 class="rampart-font welcome__main-title ">Rock paper scissors</h2>
+      <loader-comp name="loader" class="loader" visible></loader-comp>
       <form class="welcome__form-container" >
         <div class="welcome__label-input-box">
           <label for="input" style="font-size:48px" class="odibee-font">tu nombre</label>

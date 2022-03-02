@@ -28,8 +28,9 @@ app.post("/sala", (req, res) => {
           message: "no existe un room con ese id",
         });
       } else {
+        const roomLongId = searchResponse.docs[0].id;
         const rtdbRef = rtdb.ref(
-          `/chatrooms/${searchResponse.docs[0].id}/currentGame/player2`
+          `/chatrooms/${roomLongId}/currentGame/player2`
         );
         rtdbRef
           .child("/name")
@@ -41,8 +42,9 @@ app.post("/sala", (req, res) => {
                 "the room is available, or your name matches the name rooms player two name"
               );
               rtdbRef.update({ online: true, name }).then(() => {
+                console.log("player 2 is now online");
                 res.json({
-                  name,
+                  roomLongId: roomLongId,
                 });
               });
             } else {

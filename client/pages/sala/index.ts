@@ -17,8 +17,10 @@ customElements.define(
         e.preventDefault();
         const name = e.target.nombre.value;
         const shortId = e.target.codigo.value;
-        const player2Name = state.goToRoom(name, shortId).then((name) => {
+        state.goToRoom(name, shortId).then((name) => {
+          state.listenDatabase();
           console.log(name);
+
           Router.go("/espera");
         });
       });

@@ -1,7 +1,9 @@
 import { initPlayComp } from "./components/jugada";
 import { initTimerComp } from "./components/timer";
-import { state } from "./state";
 import { initScoreComp } from "./components/score-board";
+import { initLoaderComp } from "./components/loader";
+
+import { state } from "./state";
 import "./router";
 import "./pages/welcome";
 import "./pages/instructions";
@@ -17,5 +19,6 @@ import "./pages/espera";
   initPlayComp();
   initTimerComp();
   initScoreComp();
+  initLoaderComp();
   state.init();
 })();
