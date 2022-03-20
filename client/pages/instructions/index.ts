@@ -1,4 +1,5 @@
 import { Router } from "@vaadin/router";
+import { state } from "../../state";
 
 customElements.define(
   "instructions-page",
@@ -8,13 +9,21 @@ customElements.define(
     }
     connectedCallback() {
       this.render();
-      this.addListeners();
+      state.subscribe(() => {
+        const currentState = state.getState();
+        const { currentGame } = currentState.rtdbData as any;
+        const player1Start = currentGame.player1.start;
+        const player2Start = currentGame.player2.start;
+        if (player1Start && player2Start) {
+          Router.go("/game");
+        }
+      });
     }
     addListeners() {
       const buttonEl = this.querySelector(".button-element");
       buttonEl.addEventListener("click", (e) => {
         e.preventDefault;
-        Router.go("/game");
+        state.setStart();
       });
     }
     render() {
@@ -28,6 +37,7 @@ customElements.define(
       </div>
       `;
       this.className = "div-root";
+      this.addListeners();
     }
   }
 );

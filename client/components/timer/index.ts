@@ -66,7 +66,7 @@ export function initTimerComp() {
         let valueContainer = div.querySelector(".value-container");
 
         let counter = 0;
-        let maxLimit = 3;
+        let maxLimit = 4;
         let speed = 50;
 
         var variable = setInterval(() => {
@@ -76,13 +76,15 @@ export function initTimerComp() {
           conic-gradient(
             #4d5bf9 ${counter * 120}deg,
             #cadcff ${counter * 120}deg
-          )`;
+            )`;
 
           if (counter >= maxLimit) {
-            const currentState = state.getState().currentGame;
-            if (currentState.myPlay) {
+            const { currentGame } = state.getState().rtdbData as any;
+            if (currentGame.player1.choice) {
               clearInterval(variable);
             } else {
+              alert("cmon pick");
+              counter = 0;
             }
           }
         }, 1000);

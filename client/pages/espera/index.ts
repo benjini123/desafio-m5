@@ -13,19 +13,16 @@ customElements.define(
       state.subscribe(() => {
         const playerTwoOnline =
           state.getState().rtdbData.currentGame.player2.online;
-        console.log("player two is: " + playerTwoOnline);
+        console.log("player two Online?: " + playerTwoOnline);
         if (playerTwoOnline === true) {
           Router.go("/instructions");
-        } else {
-          // this.render();
         }
       });
     }
     render() {
       const currentState = state.getState();
-      const data = currentState.rtdbData;
-      const player1Name = data.currentGame.player1.name;
-      const player2Name = data.currentGame.player2.name;
+      const player1Name = currentState.playerOneName || "";
+      const player2Name = currentState.playerTwoName || "";
       const won = currentState.history.previousGames.won.length;
       const lost = currentState.history.previousGames.lost.length;
       const roomShortId = currentState.roomShortId;

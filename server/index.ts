@@ -139,6 +139,39 @@ app.get("/rooms/:roomId", (req, res) => {
     });
 });
 
+app.post("/start/:roomLongId", (req, res) => {
+  const { player } = req.body;
+  const { roomLongId } = req.params;
+
+  var dataRef = rtdb.ref(`/chatrooms/${roomLongId}/currentGame/${player}`);
+  dataRef.get().then((snapshot) => {
+    if (snapshot.exists()) {
+      dataRef.update({ start: true }).then(() => {
+        console.log(player + " has now pressed start");
+        return res.json({ player });
+      });
+    } else {
+      return console.log("No data available");
+    }
+  });
+});
+
+app.post("/play/:player", (req, res) => {
+  const { player } = req.params;
+  const { move, roomLongId } = req.body;
+
+  var dataRef = rtdb.ref(`/chatrooms/${roomLongId}/currentGame/${player}`);
+  dataRef.get().then((snapshot) => {
+    if (snapshot.exists()) {
+      dataRef.update({ choice: move }).then(() => {
+        return res.json(`${player} choice is: ${move}`);
+      });
+    } else {
+      return console.log("No data available");
+    }
+  });
+});
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../dist/index.html"));
 });

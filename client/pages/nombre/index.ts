@@ -16,11 +16,8 @@ customElements.define(
       formEl.addEventListener("submit", (e: any) => {
         e.preventDefault();
         const name = e.target.input.value;
-        this.querySelector(".loader").toggleAttribute("visible");
-        // this.render();
         state.setName(name).then((userId) => {
           console.log(userId);
-          //data.roomLongId
           state.setRoomLongId(userId).then((roomLongId) => {
             console.log(roomLongId);
             state.listenDatabase();
@@ -34,7 +31,7 @@ customElements.define(
     render() {
       this.innerHTML = `
       <h2 class="rampart-font welcome__main-title ">Rock paper scissors</h2>
-      <loader-comp name="loader" class="loader" visible></loader-comp>
+      <loader-comp name="loader" class="loader"></loader-comp>
       <form class="welcome__form-container" >
         <div class="welcome__label-input-box">
           <label for="input" style="font-size:48px" class="odibee-font">tu nombre</label>

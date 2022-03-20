@@ -1,6 +1,3 @@
-import * as e from "express";
-import { state } from "../../state";
-
 export function initLoaderComp() {
   customElements.define(
     "loader-comp",
@@ -37,39 +34,19 @@ export function initLoaderComp() {
         div.innerHTML = `
         <div class="loader"></div>
         `;
-
-        let loader: any = div.querySelector(".loader");
-        if (this.getAttribute("visible") == "true") {
-          console.log("it is supposed to be shown ");
-          this.hidden = false;
-          this.render();
-        } else {
-          this.hidden = true;
-        }
-
-        this.shadow.appendChild(div);
       }
       static get observedAttributes() {
-        return ["visible"];
+        return ["disabled"];
+      }
+      get disabled() {
+        return this.hasAttribute("disabled");
       }
 
-      get visible() {
-        return this.hasAttribute("visible");
-      }
-
-      set visible(val) {
-        if (val) {
+      attributeChangedCallback(disabled) {
+        if (this.disabled) {
           this.setAttribute("disabled", "");
         } else {
           this.removeAttribute("disabled");
-        }
-      }
-
-      attributeChangedCallback(name, oldValue, newValue) {
-        if (this.visible) {
-          this.setAttribute("visible", "true");
-        } else {
-          this.setAttribute("visible", "false");
         }
       }
     }
