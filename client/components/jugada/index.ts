@@ -16,7 +16,7 @@ export function initPlayComp() {
         const style = document.createElement("style");
         const hoverable = this.hasAttribute("hover");
 
-        if (hoverable == true) {
+        if (hoverable) {
           style.innerHTML = `
           
           .hand{
@@ -36,10 +36,16 @@ export function initPlayComp() {
       }
       addListeners() {
         const handEl: any = this.shadow.querySelector(".hand");
-        const reveal: any = this.getAttribute("reveal");
+        const reveal: any = this.hasAttribute("reveal");
         if (reveal) {
           handEl.style.width = "180px";
           handEl.style.height = "325px";
+        }
+        if (this.hasAttribute("game")) {
+          this.addEventListener("click", () => {
+            handEl.style.width = "100px";
+            handEl.style.opacity = "1";
+          });
         }
       }
       render() {

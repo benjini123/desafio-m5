@@ -15,46 +15,89 @@ app.use(express.static("dist"));
 const userCollection = firestore.collection("users");
 const roomsCollection = firestore.collection("rooms");
 
+//verifica si existe la sala en base al short id:
 app.post("/sala", (req, res) => {
-  const { name } = req.body;
   const { shortId } = req.body;
 
   roomsCollection
     .where("id", "==", shortId)
     .get()
     .then((searchResponse) => {
-      if (searchResponse.empty) {
+      if (!searchResponse.empty) {
+        const owner = searchResponse.docs[0].get("owner");
+        res.json({
+          roomLongId: searchResponse.docs[0].id,
+          owner,
+        });
+      } else {
         res.status(404).json({
           message: "no existe un room con ese id",
         });
-      } else {
-        const roomLongId = searchResponse.docs[0].id;
-        const rtdbRef = rtdb.ref(
-          `/chatrooms/${roomLongId}/currentGame/player2`
-        );
-        rtdbRef
-          .child("/name")
-          .get()
-          .then((snap) => {
-            const snapValue = snap.val();
-            if (snapValue === name || snapValue === "") {
-              console.log(
-                "the room is available, or your name matches the name rooms player two name"
-              );
-              rtdbRef.update({ online: true, name }).then(() => {
-                console.log("player 2 is now online");
-                res.json({
-                  roomLongId: roomLongId,
-                });
-              });
-            } else {
-              res.status(404).json({
-                message: `your name doesnt match any of the room's players`,
-              });
-            }
-          });
       }
     });
+});
+
+app.post("/verify/:roomLongId", (req, res) => {
+  const { roomLongId } = req.params;
+  const { player, name } = req.body;
+  const nameRef = rtdb.ref(`/chatrooms/${roomLongId}/currentGame/${player}`);
+  nameRef
+    .child("/name")
+    .get()
+    .then((nameSnap) => {
+      if (nameSnap.val() !== "") {
+        if (nameSnap.val() == name) {
+          res.json({ message: "the player belongs to this room" });
+        } else {
+          res.status(404).json({
+            message: "the name does not match any of the rooms players",
+          });
+        }
+      } else {
+        nameRef.update({ name }).then(() => {
+          res.json({ message: "player 2 added to the game room" });
+        });
+      }
+    })
+    .catch((error) => res.json(error));
+});
+
+app.post("/online/:roomLongId", (req, res) => {
+  const { roomLongId } = req.params;
+  const { player } = req.body;
+
+  const playerRef = rtdb.ref(`/chatrooms/${roomLongId}/currentGame/${player}`);
+
+  playerRef
+    .child("/online")
+    .get()
+    .then((snapshot) => {
+      if (snapshot.val() == true) {
+        res.status(404).json({
+          message: `${player} is already online `,
+        });
+      } else {
+        playerRef.update({ online: true }).then(() => {
+          res.json({ message: `${player} is now online :)` });
+        });
+      }
+    });
+});
+
+app.post("/offline/:roomLongId", (req, res) => {
+  const { player } = req.body;
+  const { roomLongId } = req.params;
+
+  const playerRef = rtdb.ref(`/chatrooms/${roomLongId}/currentGame/${player}`);
+  playerRef.get().then((snapshot) => {
+    if (snapshot.exists()) {
+      playerRef.update({ online: false }).then(() => {
+        res.json({ message: "user is now offline" });
+      });
+    } else {
+      res.status(404).json({ message: "Error fetching player" });
+    }
+  });
 });
 
 //busca en firestore que usuario tiene ese nombre y si ya existe devuelve su id LARGO, sino lo crea
@@ -83,13 +126,13 @@ app.post("/rooms", (req, res) => {
   const { userId } = req.body;
   const { userName } = req.body;
   roomsCollection
-    .where("owner", "==", userId)
+    .where("owner", "==", userId.id)
     .get()
     .then((searchResponse) => {
       if (searchResponse.empty) {
         roomsCollection
           .add({
-            owner: userId,
+            owner: userName,
             id: uuidv4().substring(0, 6),
           })
           .then((data) => {
@@ -101,7 +144,7 @@ app.post("/rooms", (req, res) => {
                   player1: {
                     choice: "",
                     name: userName,
-                    online: true,
+                    online: false,
                     start: false,
                   },
                   player2: {
@@ -121,18 +164,19 @@ app.post("/rooms", (req, res) => {
           roomId: searchResponse.docs[0].id,
         });
       }
+    })
+    .catch((error) => {
+      res.json(error.message);
     });
 });
 
 app.get("/rooms/:roomId", (req, res) => {
   const { roomId } = req.params;
-  // console.log(roomId);
   roomsCollection
     .doc(`${roomId}`)
     .get()
     .then((doc) => {
       const shortId = doc.get("id");
-      // console.log(shortId);
       res.json({
         shortId,
       });
@@ -144,32 +188,68 @@ app.post("/start/:roomLongId", (req, res) => {
   const { roomLongId } = req.params;
 
   var dataRef = rtdb.ref(`/chatrooms/${roomLongId}/currentGame/${player}`);
-  dataRef.get().then((snapshot) => {
-    if (snapshot.exists()) {
-      dataRef.update({ start: true }).then(() => {
-        console.log(player + " has now pressed start");
-        return res.json({ player });
-      });
-    } else {
-      return console.log("No data available");
-    }
+  dataRef.update({ start: true }).then(() => {
+    res.json({ player });
   });
+  // dataRef.get().then((snapshot) => {
+  //   if (snapshot.exists()) {
+  //   } else {
+  //     res.json({ message: "No data available" });
+  //   }
+  // });
 });
 
-app.post("/play/:player", (req, res) => {
+app.post("/choice/:player", (req, res) => {
   const { player } = req.params;
-  const { move, roomLongId } = req.body;
+  const { choice, roomLongId } = req.body;
 
   var dataRef = rtdb.ref(`/chatrooms/${roomLongId}/currentGame/${player}`);
   dataRef.get().then((snapshot) => {
     if (snapshot.exists()) {
-      dataRef.update({ choice: move }).then(() => {
-        return res.json(`${player} choice is: ${move}`);
+      dataRef.update({ choice }).then(() => {
+        res.json(`${player} choice is: ${choice}`);
       });
     } else {
-      return console.log("No data available");
+      res.json("No data available");
     }
   });
+});
+
+app.post("/history/:roomLongId", (req, res) => {
+  const { roomLongId } = req.params;
+  const { winner, game } = req.body;
+
+  const dataRef = rtdb.ref(`/chatrooms/${roomLongId}`);
+  const previousGames = dataRef.child("/previousGames");
+
+  previousGames
+    .get()
+    .then((snapshot) => {
+      if (!snapshot.exists()) {
+        dataRef.update({ previousGames: {} }).then((response) => {
+          return response;
+        });
+      }
+    })
+    .then(() => {
+      previousGames.push({
+        game,
+        winner,
+      });
+      res.json("game pushed to history");
+    });
+});
+
+app.post("/reset/:roomLongId", (req, res) => {
+  const { roomLongId } = req.params;
+  const { player } = req.body;
+
+  rtdb
+    .ref(`/chatrooms/${roomLongId}/currentGame/${player}`)
+    .update({ choice: "", start: false })
+    .then(() => {
+      res.json("player reset");
+    });
 });
 
 app.get("*", (req, res) => {

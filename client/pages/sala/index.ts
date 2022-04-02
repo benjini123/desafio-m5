@@ -17,11 +17,19 @@ customElements.define(
         e.preventDefault();
         const name = e.target.nombre.value;
         const shortId = e.target.codigo.value;
-        state.goToRoom(name, shortId).then((name) => {
+        state.verifyRoom(shortId).then((data) => {
+          const owner = data.owner;
           state.listenDatabase();
-          console.log(name);
-
-          Router.go("/espera");
+          state
+            .verifyPlayer(name, owner)
+            .then(() => {
+              setTimeout(() => {
+                Router.go("/espera");
+              }, 1000);
+            })
+            .catch((error) => {
+              alert(error.message);
+            });
         });
       });
     }

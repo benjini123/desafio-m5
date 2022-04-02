@@ -66,7 +66,7 @@ export function initTimerComp() {
         let valueContainer = div.querySelector(".value-container");
 
         let counter = 0;
-        let maxLimit = 4;
+        let maxLimit = 8;
         let speed = 50;
 
         var variable = setInterval(() => {
@@ -74,8 +74,8 @@ export function initTimerComp() {
           valueContainer.textContent = `${counter}`;
           progressBar.style.background = `
           conic-gradient(
-            #4d5bf9 ${counter * 120}deg,
-            #cadcff ${counter * 120}deg
+            #4d5bf9 ${counter * 45}deg,
+            #cadcff ${counter * 45}deg
             )`;
 
           if (counter >= maxLimit) {
@@ -83,7 +83,6 @@ export function initTimerComp() {
             if (currentGame.player1.choice) {
               clearInterval(variable);
             } else {
-              alert("cmon pick");
               counter = 0;
             }
           }

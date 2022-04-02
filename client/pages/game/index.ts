@@ -1,4 +1,5 @@
 import { Router } from "@vaadin/router";
+import { stat } from "fs";
 import { state } from "../../state";
 
 type Jugada = "rock" | "paper" | "scissors";
@@ -16,7 +17,6 @@ customElements.define(
 
     connectedCallback() {
       this.render();
-      this.addListeners();
       state.subscribe(() => {
         const { currentGame } = state.getState().rtdbData as any;
         if (currentGame.player1.choice && currentGame.player2.choice) {
@@ -28,9 +28,8 @@ customElements.define(
       const elementCollection = this.querySelectorAll(".hoverable-choice");
       elementCollection.forEach((el) => {
         el.addEventListener("click", (e) => {
-          e.stopPropagation;
-          const move = el.getAttribute("jugada") as Jugada;
-          console.log(move);
+          e.stopPropagation();
+          const move: Jugada = el.getAttribute("jugada") as Jugada;
           state.setPlayerChoice(move);
         });
       });
@@ -52,6 +51,7 @@ customElements.define(
       `;
 
       this.className = "div-root";
+      this.addListeners();
     }
   }
 );

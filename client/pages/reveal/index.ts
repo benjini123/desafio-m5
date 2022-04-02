@@ -1,5 +1,5 @@
 import { Router } from "@vaadin/router";
-import { state } from "../../state";
+import { state, Jugada, Game, Player } from "../../state";
 
 customElements.define(
   "reveal-page",
@@ -9,35 +9,51 @@ customElements.define(
     }
     connectedCallback() {
       this.render();
-      this.addListeners();
-    }
-    addListeners() {
-      const computerPlay =
-        this.querySelector(".computer-choice").getAttribute("jugada");
-
-      const myPlay = this.querySelector(".my-choice").getAttribute("jugada");
-
-      setTimeout(() => {
-        const results = state.whoWins(myPlay, computerPlay);
-        if (results == 2) {
-          Router.go("/game");
-        } else if (results == 1) {
-          Router.go("/perdiste");
-        } else {
-          Router.go("/ganaste");
-        }
-      }, 3000);
+      state.listeners = [];
+      state.subscribe(() => {
+        window.addEventListener("beforeunload", function (e) {
+          e.preventDefault();
+          state.handleClose();
+        });
+      });
     }
     render() {
+      const cs = state.getState();
+      const { currentGame } = cs.rtdbData as any;
+      const { player } = cs;
+
+      var play1: Jugada = currentGame.player1.choice;
+      var play2: Jugada = currentGame.player2.choice;
+      const game: Game = { play1, play2 };
+      const winner: Player = state.whoWins(play1, play2);
+
+      if (winner) {
+        state.pushToHistory(game, winner);
+      }
+
+      const playerOneTrue = player == "player1";
+
       this.innerHTML = `
-      <play-comp class="computer-choice" reveal="true" jugada=${
-        state.getState().currentGame.computerPlay
+      <play-comp class="top-choice" reveal="true" jugada=${
+        playerOneTrue ? play2 : play1
       }></play-comp>
-      <play-comp class="my-choice" reveal="true" jugada=${
-        state.getState().currentGame.myPlay
+      <play-comp class="bottom-choice" reveal="true" jugada=${
+        playerOneTrue ? play1 : play2
       } ></play-comp>
     `;
+
       this.className = "div-root";
+      setTimeout(() => {
+        state.resetPlayer().then(() => {
+          if (!winner) {
+            Router.go("/empate");
+          } else if (player == winner) {
+            Router.go("/ganaste");
+          } else {
+            Router.go("/perdiste");
+          }
+        });
+      }, 3000);
     }
   }
 );

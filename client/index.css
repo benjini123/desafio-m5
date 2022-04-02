@@ -67,13 +67,13 @@ body {
   align-items: flex-end;
 }
 
-.computer-choice {
+.top-choice {
   transform: rotate(180deg);
-  animation: transitionIn 3s;
+  animation: transitionIn 4s;
 }
 
-.my-choice {
-  animation: transitionIn 3s;
+.bottom-choice {
+  animation: transitionIn 4s;
 }
 
 @keyframes transitionIn {
@@ -83,7 +83,7 @@ body {
   }
   to {
     opacity: 1;
-    height: 300px;
+    height: 329px;
   }
 }
 
@@ -99,12 +99,12 @@ body {
 .match-results__container {
   position: relative;
   text-align: center;
-  color: white;
   font-family: "Odibee sans";
   font-size: 50px;
 }
 
 .match-results__image-text {
+  color: white;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -118,6 +118,11 @@ body {
 
 .green {
   background-color: hsla(130, 48%, 47%, 0.3);
+}
+
+div,
+.black {
+  color: black;
 }
 
 .button-element {

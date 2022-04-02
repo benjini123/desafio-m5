@@ -1,4 +1,5 @@
 import { Router } from "@vaadin/router";
+import { stat } from "fs";
 import { rtdb } from "../../rtdb";
 import { state } from "../../state";
 
@@ -10,29 +11,35 @@ customElements.define(
     }
     connectedCallback() {
       this.render();
+
       state.subscribe(() => {
-        const playerTwoOnline =
-          state.getState().rtdbData.currentGame.player2.online;
-        console.log("player two Online?: " + playerTwoOnline);
-        if (playerTwoOnline === true) {
+        const { currentGame } = state.getState().rtdbData;
+        const playerOneOnline = currentGame.player1.online;
+        const playerTwoOnline = currentGame.player2.online;
+        if (playerOneOnline && playerTwoOnline) {
           Router.go("/instructions");
         }
       });
+
+      state.setPlayerOnline();
     }
     render() {
-      const currentState = state.getState();
-      const player1Name = currentState.playerOneName || "";
-      const player2Name = currentState.playerTwoName || "";
-      const won = currentState.history.previousGames.won.length;
-      const lost = currentState.history.previousGames.lost.length;
-      const roomShortId = currentState.roomShortId;
+      const { player, rtdbData, roomShortId } = state.getState();
+      const player1Name = rtdbData.currentGame.player1.name;
+      const player2Name = rtdbData.currentGame.player2.name;
+      const playerOneTrue = player == "player1";
 
+      const score = state.getScores();
       this.innerHTML = `
         
       <header class="espera__header">
         <div class="espera__jugadores">
-          <p>${player1Name}: ${won}</p>  
-          <p>${player2Name}: ${lost}</p>
+          <p>${playerOneTrue ? player1Name : player2Name}: ${
+        playerOneTrue ? score.player1 : score.player2
+      }</p>  
+          <p>${playerOneTrue ? player2Name : player1Name}: ${
+        playerOneTrue ? score.player2 : score.player1
+      }</p>
         </div>
         <div>
           <p style="fontWeight:bold">SALA</p>

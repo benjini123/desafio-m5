@@ -1,16 +1,17 @@
 import { Router } from "@vaadin/router";
 import { state } from "../../state";
 
-const redStarURL = require("url:../../content/star-2.png");
+const greenStarURL = require("url:../../content/star-1.png");
 
 customElements.define(
-  "perdiste-page",
+  "empate-page",
   class extends HTMLElement {
     constructor() {
       super();
     }
     connectedCallback() {
       this.render();
+      this.addListeners();
     }
     addListeners() {
       const buttonEl = this.querySelector(".button-element");
@@ -23,14 +24,15 @@ customElements.define(
       this.innerHTML = `
 
         <div class="match-results__container">
-          <img width="255px" src="${redStarURL}">
-          <div class="match-results__image-text">Defeat</div>
+          <img width="255px" >
+          <div class="match-results__image-text black">Empate!</div>
         </div>
         <score-comp></score-comp>
-        <button class="button-element">replay</button>
+        <div>
+          <button class="button-element">replay</button>
+        </div>
       `;
-      this.className = "results__container red";
-      this.addListeners();
+      this.className = "results__container";
     }
   }
 );

@@ -16,14 +16,17 @@ customElements.define(
       formEl.addEventListener("submit", (e: any) => {
         e.preventDefault();
         const name = e.target.input.value;
-        state.setName(name).then((userId) => {
+        state.setPlayerOneName(name).then((userId) => {
           console.log(userId);
-          state.setRoomLongId(userId).then((roomLongId) => {
+          state.setRoomLongId(userId, name).then((roomLongId) => {
             console.log(roomLongId);
             state.listenDatabase();
-            state.setRoomShortId(roomLongId).then(() => {
-              Router.go("/espera");
-            });
+            setTimeout(() => {
+              state.setRoomShortId(roomLongId).then((roomShortId) => {
+                console.log(roomShortId);
+                Router.go("/espera");
+              });
+            }, 1000);
           });
         });
       });

@@ -13,4 +13,5 @@ router.setRoutes([
   { path: "/reveal", component: "reveal-page" },
   { path: "/perdiste", component: "perdiste-page" },
   { path: "/ganaste", component: "ganaste-page" },
+  { path: "/empate", component: "empate-page" },
 ]);

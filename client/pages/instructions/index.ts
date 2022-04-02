@@ -1,4 +1,5 @@
 import { Router } from "@vaadin/router";
+import { listeners } from "process";
 import { state } from "../../state";
 
 customElements.define(
@@ -8,21 +9,20 @@ customElements.define(
       super();
     }
     connectedCallback() {
-      this.render();
       state.subscribe(() => {
-        const currentState = state.getState();
-        const { currentGame } = currentState.rtdbData as any;
+        const { currentGame } = state.getState().rtdbData as any;
         const player1Start = currentGame.player1.start;
         const player2Start = currentGame.player2.start;
         if (player1Start && player2Start) {
           Router.go("/game");
         }
       });
+      this.render();
     }
     addListeners() {
       const buttonEl = this.querySelector(".button-element");
       buttonEl.addEventListener("click", (e) => {
-        e.preventDefault;
+        e.preventDefault();
         state.setStart();
       });
     }

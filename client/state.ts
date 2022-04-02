@@ -1,33 +1,17 @@
 import { rtdb } from "./rtdb";
 import { ref, onValue, get, child, getDatabase } from "firebase/database";
-import { response } from "express";
-import { on } from "process";
-import { json } from "body-parser";
-import { platform } from "os";
 
 const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:4006";
 
-type Jugada = "rock" | "paper" | "scissors";
-type Game = { play1: Jugada; play2: Jugada };
-type Result = "win" | "lose";
+export type Jugada = "rock" | "paper" | "scissors";
+export type Game = { play1: Jugada; play2: Jugada };
+export type Player = "player1" | "player2";
 
 export const state = {
   data: {
     rtdbData: {},
     roomLongId: "",
     roomShortId: "",
-    playerOneName: "",
-    playerTwoName: "",
-    playerTwoOnline: false,
-    playerOneStart: false,
-    playerTwoStart: false,
-    currentGame: {
-      play1: "",
-      play2: "",
-    },
-    history: {
-      previousGames: { won: [], lost: [] },
-    },
   },
   listeners: [],
 
@@ -39,6 +23,7 @@ export const state = {
       state.setState(localData);
     }
   },
+
   listenDatabase() {
     const cs = this.getState();
     const longId = cs.roomLongId;
@@ -48,13 +33,30 @@ export const state = {
       const currentState = this.getState();
       const value = snapshot.val();
       currentState.rtdbData = value;
-      console.log("*DataBASE change");
       this.setState(currentState);
     });
   },
-  async setName(name) {
+
+  async handleClose() {
+    const { player } = state.getState();
+    const resResetPlayer = await fetch(
+      `http://localhost:4006/offline/${player}`,
+      {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ player }),
+      }
+    );
+    const resResetPlayerData = await resResetPlayer;
+    return resResetPlayerData;
+  },
+
+  async setPlayerOneName(name) {
     const currentState = this.getState();
-    currentState.playerOneName = name;
+    currentState.player = "player1";
+    // currentState.playerOneName = name;
     this.setState(currentState);
 
     const resSetName = await fetch("http://localhost:4006/auth", {
@@ -69,10 +71,8 @@ export const state = {
     return resSetNameData;
   },
 
-  async setRoomLongId(userId) {
+  async setRoomLongId(userId, userName) {
     const currentState = state.getState();
-    const userName = currentState.playerOneName;
-
     const resSetRoom = await fetch("http://localhost:4006/rooms", {
       method: "post",
       headers: {
@@ -100,25 +100,22 @@ export const state = {
     const resShortIdData = await resShortId.json();
     currentState.roomShortId = resShortIdData.shortId;
     state.setState(currentState);
-    console.log(resShortIdData);
+    return resShortIdData;
   },
 
-  async goToRoom(name, shortId) {
+  async verifyRoom(shortId) {
     const currentState = state.getState();
     currentState.roomShortId = shortId;
-    currentState.playerTwoOnline = true;
-    currentState.playerTwoName = name;
+
     const longIdRes = await fetch(`http://localhost:4006/sala`, {
       method: "post",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name, shortId }),
+      body: JSON.stringify({ shortId }),
     }).then((res) => {
       if (res.status >= 400 && res.status < 600) {
-        alert(
-          "Ups, esta sala está completa y tu nombre no coincide con nadie en la sala."
-        );
+        alert("Ups, no existe un room con ese id");
       } else {
         return res;
       }
@@ -129,18 +126,66 @@ export const state = {
     return resLongIdData;
   },
 
+  async verifyPlayer(name, owner) {
+    const currentState = state.getState();
+    const { roomLongId } = currentState;
+
+    var player = "player2";
+
+    if (name == owner) {
+      player = "player1";
+    }
+
+    const onlineRes = await fetch(
+      `http://localhost:4006/verify/${roomLongId}`,
+      {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ player, name }),
+      }
+    ).then((res) => {
+      if (res.status >= 400 && res.status < 600) {
+        throw Error(res.statusText);
+      } else {
+        currentState.player = player;
+        state.setState(currentState);
+        return res;
+      }
+    });
+    const onlineResData = await onlineRes;
+    return onlineResData;
+  },
+
+  async setPlayerOnline() {
+    const currentState = state.getState();
+    const { roomLongId, player } = currentState;
+
+    const onlineRes = await fetch(
+      `http://localhost:4006/online/${roomLongId}`,
+      {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ player }),
+      }
+    ).then((res) => {
+      if (res.status >= 400 && res.status < 600) {
+        throw Error(res.statusText);
+      } else {
+        return res;
+      }
+    });
+    const onlineResData = await onlineRes;
+    return onlineResData;
+  },
+
   async setStart() {
     const currentState = state.getState();
-    const { playerOneName, roomLongId, playerTwoName } = currentState;
-
-    var player = "";
-    if (playerOneName) {
-      player = "player1";
-      console.log(player, "has clicked start");
-    } else if (playerTwoName) {
-      player = "player2";
-      console.log(player, "has clicked start");
-    }
+    const { player, roomLongId } = currentState;
+    console.log(player, "has now clicked start");
 
     const resSetName = await fetch(
       `http://localhost:4006/start/${roomLongId}`,
@@ -152,30 +197,21 @@ export const state = {
         body: JSON.stringify({ player }),
       }
     );
+
     const resSetNameData = await resSetName.json();
-    // state.setState(currentState);
     return resSetNameData;
   },
 
-  async setPlayerChoice(move: Jugada) {
-    const currentState = state.getState();
-    const { playerOneName, playerTwoName, roomLongId } = currentState;
+  async setPlayerChoice(choice: Jugada) {
+    const { roomLongId, player } = state.getState();
+    console.log(player + " has chosen " + choice);
 
-    var player = "";
-    if (playerOneName) {
-      player = "player1";
-      console.log(player, "has clicked start");
-    } else {
-      player = "player2";
-      console.log(player, "has clicked start");
-    }
-
-    const nameIdRes = await fetch(`http://localhost:4006/play/${player}`, {
+    const nameIdRes = await fetch(`http://localhost:4006/choice/${player}`, {
       method: "post",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ roomLongId, move }),
+      body: JSON.stringify({ roomLongId, choice }),
     }).then((res) => {
       if (res.status >= 400 && res.status < 600) {
         alert("error setting move");
@@ -184,49 +220,102 @@ export const state = {
       }
     });
 
-    const nameIdResData = await nameIdRes;
-    // state.setState(currentState);
+    const nameIdResData = await nameIdRes.json();
     return nameIdResData;
   },
 
   whoWins(play1, play2) {
-    if (play1 == play2) {
-      return 2;
-    }
+    const cs = state.getState();
+    const { playerOneName } = cs;
+
     const ganeConPiedra = play1 == "rock" && play2 == "scissors";
     const ganeConPapel = play1 == "paper" && play2 == "rock";
     const ganeConTijeras = play1 == "scissors" && play2 == "paper";
-
-    const gane = [ganeConPapel, ganeConPiedra, ganeConTijeras].includes(true);
+    const player1Wins = [ganeConPapel, ganeConPiedra, ganeConTijeras].includes(
+      true
+    );
 
     const perdiConPiedra = play1 == "rock" && play2 == "paper";
     const perdiConPapel = play1 == "paper" && play2 == "scissors";
     const perdiConTijeras = play1 == "scissors" && play2 == "rock";
+    const player2Wins = [
+      perdiConPapel,
+      perdiConPiedra,
+      perdiConTijeras,
+    ].includes(true);
 
-    const perdi = [perdiConPapel, perdiConPiedra, perdiConTijeras].includes(
-      true
-    );
+    var winner: Player = "player2";
 
-    if (gane) {
-      state.pushToHistory({ play1, play2 }, "win");
-      return 0;
-    }
-
-    if (perdi) {
-      state.pushToHistory({ play1, play2 }, "lose");
-      return 1;
-    }
-  },
-  pushToHistory(play: Game, result: Result) {
-    const currentState = state.getState();
-    if (result == "win") {
-      currentState.history.previousGames.won.push(play);
+    if (play1 == play2) {
+      return;
+    } else if (player1Wins) {
+      winner = "player1";
+      return winner;
     } else {
-      currentState.history.previousGames.lost.push(play);
+      return winner;
+    }
+  },
+
+  async pushToHistory(game: Game, winner: Player) {
+    const { roomLongId } = state.getState();
+    const pushGame = await fetch(
+      `http://localhost:4006/history/${roomLongId}`,
+      {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ winner, game }),
+      }
+    ).then((res) => {
+      if (res.status >= 400 && res.status < 600) {
+        alert("error pushing to history");
+      } else {
+        return res;
+      }
+    });
+    const pushGameData = await pushGame.json();
+    return pushGameData;
+  },
+  getScores() {
+    const cs = state.getState().rtdbData;
+    const games = cs.previousGames;
+
+    var player1Score = 0;
+    var player2Score = 0;
+
+    // console.log(Object.values(games));
+
+    if (games !== undefined) {
+      const keys = Object.values(games);
+      keys.forEach((key: any) => {
+        console.log(key.winner);
+        if (key.winner === "player1") {
+          player1Score++;
+        } else {
+          player2Score++;
+        }
+      });
     }
 
-    state.setState(currentState);
+    return { player1Score, player2Score };
   },
+
+  async resetPlayer() {
+    const { roomLongId, player } = state.getState();
+
+    const resetGame = await fetch(`http://localhost:4006/reset/${roomLongId}`, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ player }),
+    });
+
+    const resetGameData = await resetGame.json();
+    return resetGameData;
+  },
+
   getState() {
     const data = this.data;
     return data;
