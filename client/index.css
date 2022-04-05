@@ -162,4 +162,21 @@ div,
   width: 100%;
   padding: 20px;
   justify-content: space-between;
+  font-size: 25px;
+}
+.espera__header-sala-txt {
+  font-weight: bolder;
+  color: red;
+}
+
+.awaiting-opponent {
+  font-family: "Odibee sans";
+  font-size: 35px;
+  padding-top: 100px;
+  display: none;
+  height: 100vh;
+}
+
+.loader {
+  display: none;
 }

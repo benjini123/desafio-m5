@@ -11,15 +11,20 @@ customElements.define(
       this.render();
     }
     addListeners() {
-      const formEl = this.querySelector(".welcome__form-container");
+      const formEl = this.querySelector<HTMLElement>(
+        ".welcome__form-container"
+      );
+      const loaderEl = this.querySelector<HTMLElement>(".loader");
 
       formEl.addEventListener("submit", (e: any) => {
         e.preventDefault();
+
+        formEl.style.display = "none";
+        loaderEl.style.display = "initial";
+
         const name = e.target.input.value;
         state.setPlayerOneName(name).then((userId) => {
-          console.log(userId);
           state.setRoomLongId(userId, name).then((roomLongId) => {
-            console.log(roomLongId);
             state.listenDatabase();
             setTimeout(() => {
               state.setRoomShortId(roomLongId).then((roomShortId) => {

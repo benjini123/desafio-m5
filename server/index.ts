@@ -40,14 +40,21 @@ app.post("/sala", (req, res) => {
 app.post("/verify/:roomLongId", (req, res) => {
   const { roomLongId } = req.params;
   const { player, name } = req.body;
+
   const nameRef = rtdb.ref(`/chatrooms/${roomLongId}/currentGame/${player}`);
+  const onlineRef = nameRef.child("/online");
+
   nameRef
     .child("/name")
     .get()
     .then((nameSnap) => {
       if (nameSnap.val() !== "") {
         if (nameSnap.val() == name) {
-          res.json({ message: "the player belongs to this room" });
+          if (onlineRef) {
+            res.status(400).json({ message: "player is already online" });
+          } else {
+            res.json({ message: "the player belongs to this room" });
+          }
         } else {
           res.status(404).json({
             message: "the name does not match any of the rooms players",
@@ -91,7 +98,7 @@ app.post("/offline/:roomLongId", (req, res) => {
   const playerRef = rtdb.ref(`/chatrooms/${roomLongId}/currentGame/${player}`);
   playerRef.get().then((snapshot) => {
     if (snapshot.exists()) {
-      playerRef.update({ online: false }).then(() => {
+      playerRef.update({ online: false, start: false }).then(() => {
         res.json({ message: "user is now offline" });
       });
     } else {

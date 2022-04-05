@@ -38,9 +38,9 @@ export const state = {
   },
 
   async handleClose() {
-    const { player } = state.getState();
+    const { player, roomLongId } = state.getState();
     const resResetPlayer = await fetch(
-      `http://localhost:4006/offline/${player}`,
+      `http://localhost:4006/offline/${roomLongId}`,
       {
         method: "post",
         headers: {

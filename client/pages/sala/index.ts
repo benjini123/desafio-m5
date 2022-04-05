@@ -12,31 +12,46 @@ customElements.define(
       this.addListeners();
     }
     addListeners() {
-      const formEl = this.querySelector(".welcome__form-container");
+      const loaderEl = this.querySelector<HTMLElement>(".loader");
+      const formEl = this.querySelector<HTMLElement>(
+        ".welcome__form-container"
+      );
       formEl.addEventListener("submit", (e: any) => {
         e.preventDefault();
+        formEl.style.display = "none";
+        loaderEl.style.display = "initial";
         const name = e.target.nombre.value;
         const shortId = e.target.codigo.value;
-        state.verifyRoom(shortId).then((data) => {
-          const owner = data.owner;
-          state.listenDatabase();
-          state
-            .verifyPlayer(name, owner)
-            .then(() => {
-              setTimeout(() => {
-                Router.go("/espera");
-              }, 1000);
-            })
-            .catch((error) => {
-              alert(error.message);
-            });
-        });
+        state
+          .verifyRoom(shortId)
+          .then((data) => {
+            const owner = data.owner;
+            state.listenDatabase();
+            state
+              .verifyPlayer(name, owner)
+              .then(() => {
+                setTimeout(() => {
+                  Router.go("/espera");
+                }, 1000);
+              })
+              .catch((error) => {
+                formEl.style.display = "flex";
+                loaderEl.style.display = "none";
+                alert(error.message);
+              });
+          })
+          .catch((error) => {
+            formEl.style.display = "flex";
+            loaderEl.style.display = "none";
+            alert(error.message);
+          });
       });
     }
     render() {
       this.innerHTML = `
 
       <h1 class="welcome__main-title rampart-font">Rock paper scissors!</h1>
+      <loader-comp name="loader" class="loader"></loader-comp>
       <form class="welcome__form-container">
         <input name="nombre" class="input-element" placeholder="nombre"></input>
         <input name="codigo" class="input-element" placeholder="codigo"></input>

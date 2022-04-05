@@ -41,12 +41,6 @@ export function initPlayComp() {
           handEl.style.width = "180px";
           handEl.style.height = "325px";
         }
-        if (this.hasAttribute("game")) {
-          this.addEventListener("click", () => {
-            handEl.style.width = "100px";
-            handEl.style.opacity = "1";
-          });
-        }
       }
       render() {
         const jugada = this.getAttribute("jugada");

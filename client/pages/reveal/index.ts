@@ -8,10 +8,10 @@ customElements.define(
       super();
     }
     connectedCallback() {
-      this.render();
       state.listeners = [];
+      this.render();
       state.subscribe(() => {
-        window.addEventListener("beforeunload", function (e) {
+        window.addEventListener("unload", function (e) {
           e.preventDefault();
           state.handleClose();
         });
@@ -20,18 +20,18 @@ customElements.define(
     render() {
       const cs = state.getState();
       const { currentGame } = cs.rtdbData as any;
-      const { player } = cs;
 
       var play1: Jugada = currentGame.player1.choice;
       var play2: Jugada = currentGame.player2.choice;
       const game: Game = { play1, play2 };
       const winner: Player = state.whoWins(play1, play2);
 
-      if (winner) {
+      const { player } = cs;
+      const playerOneTrue = player == "player1";
+
+      if (winner && playerOneTrue) {
         state.pushToHistory(game, winner);
       }
-
-      const playerOneTrue = player == "player1";
 
       this.innerHTML = `
       <play-comp class="top-choice" reveal="true" jugada=${
@@ -43,6 +43,7 @@ customElements.define(
     `;
 
       this.className = "div-root";
+
       setTimeout(() => {
         state.resetPlayer().then(() => {
           if (!winner) {

@@ -17,12 +17,16 @@ customElements.define(
           Router.go("/game");
         }
       });
+
       this.render();
     }
     addListeners() {
-      const buttonEl = this.querySelector(".button-element");
+      const hiddenEl = this.querySelector<HTMLElement>(".awaiting-opponent");
+      const buttonEl = this.querySelector<HTMLElement>(".button-element");
       buttonEl.addEventListener("click", (e) => {
         e.preventDefault();
+        buttonEl.style.display = "none";
+        hiddenEl.style.display = "initial";
         state.setStart();
       });
     }
@@ -30,6 +34,7 @@ customElements.define(
       this.innerHTML = `
       <h2 class="rampart-font welcome__main-title ">Press play and choose between the three options before the timer runs out..</h2>
       <button class="button-element">start</button>
+      <div class="awaiting-opponent">waiting for opponent to click start...</div>
       <div class="hands">
         <play-comp jugada="rock"></play-comp>
         <play-comp jugada="paper"></play-comp>

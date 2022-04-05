@@ -6,9 +6,6 @@
     "@parcel/transformer-image": "2.0.0-rc.0",
     "parcel": "^2.0.0-rc.0"
   },
-  "engines": {
-    "node": "14x"
-  },
   "scripts": {
     "dev:front": "parcel serve ./client/index.html",
     "build:front": "parcel build ./client/index.html",

@@ -25,7 +25,7 @@ customElements.define(
 
         <div class="match-results__container">
           <img width="255px" >
-          <div class="match-results__image-text black">Empate!</div>
+          <div class="match-results__image-text black">Draw!</div>
         </div>
         <score-comp></score-comp>
         <div>

@@ -1,6 +1,4 @@
 import { Router } from "@vaadin/router";
-import { stat } from "fs";
-import { rtdb } from "../../rtdb";
 import { state } from "../../state";
 
 customElements.define(
@@ -11,7 +9,6 @@ customElements.define(
     }
     connectedCallback() {
       this.render();
-
       state.subscribe(() => {
         const { currentGame } = state.getState().rtdbData;
         const playerOneOnline = currentGame.player1.online;
@@ -20,11 +17,18 @@ customElements.define(
           Router.go("/instructions");
         }
       });
-
       state.setPlayerOnline();
+    }
+    addListeners() {
+      document.addEventListener("visibilitychange", function logData() {
+        if (document.visibilityState === "hidden") {
+          state.handleClose();
+        }
+      });
     }
     render() {
       const { player, rtdbData, roomShortId } = state.getState();
+
       const player1Name = rtdbData.currentGame.player1.name;
       const player2Name = rtdbData.currentGame.player2.name;
       const playerOneTrue = player == "player1";
@@ -32,17 +36,17 @@ customElements.define(
       const score = state.getScores();
       this.innerHTML = `
         
-      <header class="espera__header">
+      <header class="espera__header odibee-font">
         <div class="espera__jugadores">
           <p>${playerOneTrue ? player1Name : player2Name}: ${
-        playerOneTrue ? score.player1 : score.player2
+        playerOneTrue ? score.player1Score : score.player2Score
       }</p>  
           <p>${playerOneTrue ? player2Name : player1Name}: ${
-        playerOneTrue ? score.player2 : score.player1
+        playerOneTrue ? score.player2Score : score.player1Score
       }</p>
         </div>
         <div>
-          <p style="fontWeight:bold">SALA</p>
+          <p class="espera__header-sala-txt">SALA</p>
           <p>${roomShortId}</p>
         </div>
       </header>
@@ -58,6 +62,7 @@ customElements.define(
       </div>
       `;
       this.className = "div-root";
+      this.addListeners();
     }
   }
 );
