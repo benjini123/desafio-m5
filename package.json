@@ -2,6 +2,10 @@
   "name": "desafio-final",
   "version": "1.0.0",
   "license": "MIT",
+  "engines": {
+    "node": "14.17.0",
+    "yarn": "1.x"
+  },
   "devDependencies": {
     "@parcel/transformer-html": "^2.4.1",
     "@parcel/transformer-image": "2.0.0-rc.0",
