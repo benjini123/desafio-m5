@@ -1,2 +1,1 @@
-https://benjini123.github.io/desafio-m6
-
+heroku app: https://rock-paper-scissors-bengie.herokuapp.com
