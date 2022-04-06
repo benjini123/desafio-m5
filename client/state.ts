@@ -1,7 +1,7 @@
 import { rtdb } from "./rtdb";
 import { ref, onValue, get, child, getDatabase } from "firebase/database";
 
-const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:4006";
+const API_BASE_URL = "https://rock-paper-scissors-bengie.herokuapp.com/";
 
 export type Jugada = "rock" | "paper" | "scissors";
 export type Game = { play1: Jugada; play2: Jugada };
@@ -40,7 +40,7 @@ export const state = {
   async handleClose() {
     const { player, roomLongId } = state.getState();
     const resResetPlayer = await fetch(
-      `http://localhost:4006/offline/${roomLongId}`,
+      `${API_BASE_URL}/offline/${roomLongId}`,
       {
         method: "post",
         headers: {
@@ -59,7 +59,7 @@ export const state = {
     // currentState.playerOneName = name;
     this.setState(currentState);
 
-    const resSetName = await fetch("http://localhost:4006/auth", {
+    const resSetName = await fetch(`${API_BASE_URL}/auth`, {
       method: "post",
       headers: {
         "Content-Type": "application/json",
@@ -73,7 +73,7 @@ export const state = {
 
   async setRoomLongId(userId, userName) {
     const currentState = state.getState();
-    const resSetRoom = await fetch("http://localhost:4006/rooms", {
+    const resSetRoom = await fetch(`${API_BASE_URL}/rooms`, {
       method: "post",
       headers: {
         "Content-Type": "application/json",
@@ -89,7 +89,7 @@ export const state = {
   async setRoomShortId(roomLongId) {
     const currentState = state.getState();
     const resShortId = await fetch(
-      `http://localhost:4006/rooms/${roomLongId.roomId}`,
+      `${API_BASE_URL}/rooms/${roomLongId.roomId}`,
       {
         method: "get",
         headers: {
@@ -107,7 +107,7 @@ export const state = {
     const currentState = state.getState();
     currentState.roomShortId = shortId;
 
-    const longIdRes = await fetch(`http://localhost:4006/sala`, {
+    const longIdRes = await fetch(`${API_BASE_URL}/sala`, {
       method: "post",
       headers: {
         "Content-Type": "application/json",
@@ -136,16 +136,13 @@ export const state = {
       player = "player1";
     }
 
-    const onlineRes = await fetch(
-      `http://localhost:4006/verify/${roomLongId}`,
-      {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ player, name }),
-      }
-    ).then((res) => {
+    const onlineRes = await fetch(`${API_BASE_URL}/verify/${roomLongId}`, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ player, name }),
+    }).then((res) => {
       if (res.status >= 400 && res.status < 600) {
         throw Error(res.statusText);
       } else {
@@ -162,16 +159,13 @@ export const state = {
     const currentState = state.getState();
     const { roomLongId, player } = currentState;
 
-    const onlineRes = await fetch(
-      `http://localhost:4006/online/${roomLongId}`,
-      {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ player }),
-      }
-    ).then((res) => {
+    const onlineRes = await fetch(`${API_BASE_URL}/online/${roomLongId}`, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ player }),
+    }).then((res) => {
       if (res.status >= 400 && res.status < 600) {
         throw Error(res.statusText);
       } else {
@@ -187,16 +181,13 @@ export const state = {
     const { player, roomLongId } = currentState;
     console.log(player, "has now clicked start");
 
-    const resSetName = await fetch(
-      `http://localhost:4006/start/${roomLongId}`,
-      {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ player }),
-      }
-    );
+    const resSetName = await fetch(`${API_BASE_URL}/start/${roomLongId}`, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ player }),
+    });
 
     const resSetNameData = await resSetName.json();
     return resSetNameData;
@@ -206,7 +197,7 @@ export const state = {
     const { roomLongId, player } = state.getState();
     console.log(player + " has chosen " + choice);
 
-    const nameIdRes = await fetch(`http://localhost:4006/choice/${player}`, {
+    const nameIdRes = await fetch(`${API_BASE_URL}/choice/${player}`, {
       method: "post",
       headers: {
         "Content-Type": "application/json",
@@ -258,16 +249,13 @@ export const state = {
 
   async pushToHistory(game: Game, winner: Player) {
     const { roomLongId } = state.getState();
-    const pushGame = await fetch(
-      `http://localhost:4006/history/${roomLongId}`,
-      {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ winner, game }),
-      }
-    ).then((res) => {
+    const pushGame = await fetch(`${API_BASE_URL}/history/${roomLongId}`, {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ winner, game }),
+    }).then((res) => {
       if (res.status >= 400 && res.status < 600) {
         alert("error pushing to history");
       } else {
@@ -304,7 +292,7 @@ export const state = {
   async resetPlayer() {
     const { roomLongId, player } = state.getState();
 
-    const resetGame = await fetch(`http://localhost:4006/reset/${roomLongId}`, {
+    const resetGame = await fetch(`${API_BASE_URL}/reset/${roomLongId}`, {
       method: "post",
       headers: {
         "Content-Type": "application/json",
