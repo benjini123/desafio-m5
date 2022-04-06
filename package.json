@@ -9,13 +9,11 @@
     "dev:front": "parcel serve ./client/index.html",
     "build:front": "parcel build ./client/index.html",
     "dev": "nodemon --watch './server/index.ts' --exec 'ts-node ./server/index.ts'",
-    "test": "ava",
-    "build:api": "tsc ./server/index.ts ./server/index.js",
+    "build:api": "tsc ./server/index.ts",
     "build": "yarn run build:front && yarn run build:api",
     "start": "node ./server/index.js"
   },
   "dependencies": {
-    "@types/node": "^17.0.23",
     "@vaadin/router": "^1.7.4",
     "body-parser": "^1.20.0",
     "cors": "^2.8.5",
@@ -23,7 +21,6 @@
     "express": "^4.17.3",
     "firebase": "^9.6.10",
     "firebase-admin": "^10.0.2",
-    "gh-pages": "^3.2.3",
     "nodemon": "^2.0.15",
     "parcel": "^2.0.0-rc.0",
     "path": "^0.12.7",

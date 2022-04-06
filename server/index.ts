@@ -1,5 +1,4 @@
 import * as express from "express";
-import { json } from "body-parser";
 import { firestore, rtdb } from "./db";
 import { v4 as uuidv4 } from "uuid";
 import * as cors from "cors";
