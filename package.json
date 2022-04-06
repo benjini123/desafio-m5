@@ -7,9 +7,7 @@
     "yarn": "1.x"
   },
   "devDependencies": {
-    "@parcel/transformer-html": "^2.4.1",
-    "@parcel/transformer-image": "2.0.0-rc.0",
-    "@parcel/transformer-posthtml": "^2.4.1"
+    "@parcel/transformer-image": "2.0.0-rc.0"
   },
   "scripts": {
     "dev:front": "parcel serve ./client/index.html",
@@ -30,7 +28,7 @@
     "firebase-admin": "^10.0.2",
     "gh-pages": "^3.2.3",
     "nodemon": "^2.0.15",
-    "parcel": "^2.4.1",
+    "parcel": "^2.0.0-rc.0",
     "path": "^0.12.7"
   }
 }
