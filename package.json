@@ -19,6 +19,7 @@
     "start": "node ./server/index.js"
   },
   "dependencies": {
+    "@types/node": "^17.0.23",
     "@vaadin/router": "^1.7.4",
     "body-parser": "^1.20.0",
     "cors": "^2.8.5",
