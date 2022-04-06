@@ -1,7 +1,7 @@
 import { rtdb } from "./rtdb";
-import { ref, onValue, get, child, getDatabase } from "firebase/database";
+import { ref, onValue } from "firebase/database";
 
-const API_BASE_URL = "https://rock-paper-scissors-bengie.herokuapp.com/";
+const API_BASE_URL = "https://rock-paper-scissors-bengie.herokuapp.com";
 
 export type Jugada = "rock" | "paper" | "scissors";
 export type Game = { play1: Jugada; play2: Jugada };
@@ -56,7 +56,6 @@ export const state = {
   async setPlayerOneName(name) {
     const currentState = this.getState();
     currentState.player = "player1";
-    // currentState.playerOneName = name;
     this.setState(currentState);
 
     const resSetName = await fetch(`${API_BASE_URL}/auth`, {
@@ -271,8 +270,6 @@ export const state = {
 
     var player1Score = 0;
     var player2Score = 0;
-
-    // console.log(Object.values(games));
 
     if (games !== undefined) {
       const keys = Object.values(games);
