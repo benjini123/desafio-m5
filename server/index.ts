@@ -3,7 +3,6 @@ import { firestore, rtdb } from "./db";
 import { v4 as uuidv4 } from "uuid";
 import * as cors from "cors";
 import * as path from "path";
-import { on } from "events";
 
 const port = process.env.PORT || 4006;
 

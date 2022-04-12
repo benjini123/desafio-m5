@@ -6,6 +6,8 @@ customElements.define(
   class extends HTMLElement {
     constructor() {
       super();
+    }
+    connectedCallback() {
       state.subscribe(() => {
         const { currentGame } = state.getState().rtdbData as any;
         const player1Start = currentGame.player1.start;
@@ -14,8 +16,6 @@ customElements.define(
           Router.go("/game");
         }
       });
-    }
-    connectedCallback() {
       this.render();
     }
     render() {
