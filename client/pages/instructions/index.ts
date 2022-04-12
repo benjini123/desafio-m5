@@ -1,5 +1,4 @@
 import { Router } from "@vaadin/router";
-import { listeners } from "process";
 import { state } from "../../state";
 
 customElements.define(
@@ -7,8 +6,6 @@ customElements.define(
   class extends HTMLElement {
     constructor() {
       super();
-    }
-    connectedCallback() {
       state.subscribe(() => {
         const { currentGame } = state.getState().rtdbData as any;
         const player1Start = currentGame.player1.start;
@@ -17,18 +14,9 @@ customElements.define(
           Router.go("/game");
         }
       });
-
-      this.render();
     }
-    addListeners() {
-      const hiddenEl = this.querySelector<HTMLElement>(".awaiting-opponent");
-      const buttonEl = this.querySelector<HTMLElement>(".button-element");
-      buttonEl.addEventListener("click", (e) => {
-        e.preventDefault();
-        buttonEl.style.display = "none";
-        hiddenEl.style.display = "initial";
-        state.setStart();
-      });
+    connectedCallback() {
+      this.render();
     }
     render() {
       this.innerHTML = `
@@ -36,13 +24,21 @@ customElements.define(
       <button class="button-element">start</button>
       <div class="awaiting-opponent">waiting for opponent to click start...</div>
       <div class="hands">
-        <play-comp jugada="rock"></play-comp>
-        <play-comp jugada="paper"></play-comp>
-        <play-comp jugada="scissors"></play-comp>
+      <play-comp jugada="rock"></play-comp>
+      <play-comp jugada="paper"></play-comp>
+      <play-comp jugada="scissors"></play-comp>
       </div>
       `;
       this.className = "div-root";
-      this.addListeners();
+
+      const hiddenEl = this.querySelector<HTMLElement>(".awaiting-opponent");
+      const buttonEl = this.querySelector<HTMLElement>(".button-element");
+      buttonEl.addEventListener("click", (e) => {
+        e.preventDefault();
+        state.setStart();
+        buttonEl.style.display = "none";
+        hiddenEl.style.display = "initial";
+      });
     }
   }
 );

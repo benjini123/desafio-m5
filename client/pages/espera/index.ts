@@ -8,6 +8,9 @@ customElements.define(
       super();
     }
     connectedCallback() {
+      window.onbeforeunload = function (e) {
+        state.handleClose();
+      };
       this.render();
       state.subscribe(() => {
         const { currentGame } = state.getState().rtdbData;
@@ -18,13 +21,6 @@ customElements.define(
         }
       });
       state.setPlayerOnline();
-    }
-    addListeners() {
-      document.addEventListener("visibilitychange", function logData() {
-        if (document.visibilityState === "hidden") {
-          state.handleClose();
-        }
-      });
     }
     render() {
       const { player, rtdbData, roomShortId } = state.getState();
@@ -62,7 +58,6 @@ customElements.define(
       </div>
       `;
       this.className = "div-root";
-      this.addListeners();
     }
   }
 );

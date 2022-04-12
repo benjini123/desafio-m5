@@ -1,7 +1,8 @@
 import { rtdb } from "./rtdb";
 import { ref, onValue } from "firebase/database";
 
-const API_BASE_URL = "https://rock-paper-scissors-bengie.herokuapp.com";
+// const API_BASE_URL = "https://rock-paper-scissors-bengie.herokuapp.com";
+const API_BASE_URL = "http://localhost:4006";
 
 export type Jugada = "rock" | "paper" | "scissors";
 export type Game = { play1: Jugada; play2: Jugada };
@@ -143,7 +144,9 @@ export const state = {
       body: JSON.stringify({ player, name }),
     }).then((res) => {
       if (res.status >= 400 && res.status < 600) {
-        throw Error(res.statusText);
+        throw Error(
+          "player may be online already or name does not match any of the rooms players"
+        );
       } else {
         currentState.player = player;
         state.setState(currentState);
@@ -166,7 +169,7 @@ export const state = {
       body: JSON.stringify({ player }),
     }).then((res) => {
       if (res.status >= 400 && res.status < 600) {
-        throw Error(res.statusText);
+        return res.statusText;
       } else {
         return res;
       }
@@ -178,7 +181,6 @@ export const state = {
   async setStart() {
     const currentState = state.getState();
     const { player, roomLongId } = currentState;
-    console.log(player, "has now clicked start");
 
     const resSetName = await fetch(`${API_BASE_URL}/start/${roomLongId}`, {
       method: "post",
@@ -186,9 +188,11 @@ export const state = {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ player }),
+    }).then((res) => {
+      return res;
     });
 
-    const resSetNameData = await resSetName.json();
+    const resSetNameData = await resSetName;
     return resSetNameData;
   },
 

@@ -3,6 +3,7 @@ import { firestore, rtdb } from "./db";
 import { v4 as uuidv4 } from "uuid";
 import * as cors from "cors";
 import * as path from "path";
+import { on } from "events";
 
 const port = process.env.PORT || 4006;
 
@@ -48,12 +49,16 @@ app.post("/verify/:roomLongId", (req, res) => {
     .get()
     .then((nameSnap) => {
       if (nameSnap.val() !== "") {
-        if (nameSnap.val() == name) {
-          if (onlineRef) {
-            res.status(400).json({ message: "player is already online" });
-          } else {
-            res.json({ message: "the player belongs to this room" });
-          }
+        if (nameSnap.val() === name) {
+          const online = onlineRef.get().then((rpta) => {
+            if (rpta.val() === true) {
+              res.status(400).json({ message: "player is already online" });
+            } else {
+              res.json({
+                message: "the player is not online and belongs to this room",
+              });
+            }
+          });
         } else {
           res.status(404).json({
             message: "the name does not match any of the rooms players",
@@ -64,8 +69,8 @@ app.post("/verify/:roomLongId", (req, res) => {
           res.json({ message: "player 2 added to the game room" });
         });
       }
-    })
-    .catch((error) => res.json(error));
+    });
+  // .catch((error) => res.json(error));
 });
 
 app.post("/online/:roomLongId", (req, res) => {
@@ -78,13 +83,13 @@ app.post("/online/:roomLongId", (req, res) => {
     .child("/online")
     .get()
     .then((snapshot) => {
-      if (snapshot.val() == true) {
+      if (snapshot.val() === true) {
         res.status(404).json({
           message: `${player} is already online `,
         });
       } else {
         playerRef.update({ online: true }).then(() => {
-          res.json({ message: `${player} is now online :)` });
+          res.json({ message: `${player} is now online` });
         });
       }
     });
@@ -195,7 +200,7 @@ app.post("/start/:roomLongId", (req, res) => {
 
   var dataRef = rtdb.ref(`/chatrooms/${roomLongId}/currentGame/${player}`);
   dataRef.update({ start: true }).then(() => {
-    res.json({ player });
+    res.json({ message: "player has now clicked start" });
   });
   // dataRef.get().then((snapshot) => {
   //   if (snapshot.exists()) {

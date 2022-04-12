@@ -10,12 +10,6 @@ customElements.define(
     connectedCallback() {
       state.listeners = [];
       this.render();
-      state.subscribe(() => {
-        window.addEventListener("unload", function (e) {
-          e.preventDefault();
-          state.handleClose();
-        });
-      });
     }
     render() {
       const cs = state.getState();
