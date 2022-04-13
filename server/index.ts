@@ -94,22 +94,6 @@ app.post("/online/:roomLongId", (req, res) => {
     });
 });
 
-app.post("/offline/:roomLongId", (req, res) => {
-  const { player } = req.body;
-  const { roomLongId } = req.params;
-
-  const playerRef = rtdb.ref(`/chatrooms/${roomLongId}/currentGame/${player}`);
-  playerRef.get().then((snapshot) => {
-    if (snapshot.exists()) {
-      playerRef.update({ online: false, start: false }).then(() => {
-        res.json({ message: "user is now offline" });
-      });
-    } else {
-      res.status(404).json({ message: "Error fetching player" });
-    }
-  });
-});
-
 //busca en firestore que usuario tiene ese nombre y si ya existe devuelve su id LARGO, sino lo crea
 app.post("/auth", (req, res) => {
   const { name } = req.body;
@@ -248,6 +232,22 @@ app.post("/history/:roomLongId", (req, res) => {
       });
       res.json("game pushed to history");
     });
+});
+
+app.post("/offline/:roomLongId", (req, res) => {
+  const { player } = req.body;
+  const { roomLongId } = req.params;
+
+  const playerRef = rtdb.ref(`/chatrooms/${roomLongId}/currentGame/${player}`);
+  playerRef.get().then((snapshot) => {
+    if (snapshot.exists()) {
+      playerRef.update({ online: false, start: false }).then(() => {
+        res.json({ message: "user is now offline" });
+      });
+    } else {
+      res.status(404).json({ message: "Error fetching player" });
+    }
+  });
 });
 
 app.post("/reset/:roomLongId", (req, res) => {

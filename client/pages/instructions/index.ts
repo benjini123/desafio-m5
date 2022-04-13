@@ -35,9 +35,10 @@ customElements.define(
       const buttonEl = this.querySelector<HTMLElement>(".button-element");
       buttonEl.addEventListener("click", (e) => {
         e.preventDefault();
-        state.setStart();
-        buttonEl.style.display = "none";
-        hiddenEl.style.display = "initial";
+        state.setStart().then(() => {
+          buttonEl.style.display = "none";
+          hiddenEl.style.display = "initial";
+        });
       });
     }
   }
