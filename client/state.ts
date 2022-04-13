@@ -1,8 +1,8 @@
 import { rtdb } from "./rtdb";
 import { ref, onValue } from "firebase/database";
 
-// const API_BASE_URL = "https://rock-paper-scissors-bengie.herokuapp.com";
-const API_BASE_URL = "http://localhost:4006";
+const API_BASE_URL = "https://rock-paper-scissors-bengie.herokuapp.com";
+// const API_BASE_URL = "http://localhost:4006";
 
 export type Jugada = "rock" | "paper" | "scissors";
 export type Game = { play1: Jugada; play2: Jugada };
