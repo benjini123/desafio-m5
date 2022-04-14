@@ -1,5 +1,6 @@
 * {
   box-sizing: border-box;
+  margin: 0;
 }
 
 .rampart-font {
@@ -63,6 +64,7 @@ body {
 .div-root {
   margin: 0;
   height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -88,12 +90,12 @@ body {
   gap: 20px;
 }
 
-@media(min-width:376px){
+/* @media(min-width:376px){
   .welcome__form-container {
     /* flex-direction: row;
-    justify-content: space-evenly; */
+    justify-content: space-evenly; 
   }
-}
+} */
 
 .hands {
   display: flex;
@@ -163,15 +165,31 @@ div,
 
 .button-element {
   background-color: #006cfc;
-  height: 87px;
-  width: 327px;
+  height: 80px;
+  width: 300px;
   font-family: "Odibee Sans";
-  font-size: 45px;
   font-weight: 400;
-  border: 10px solid #001997;
+  border: 8px solid #001997;
   border-radius: 10px;
   color: #d8fcfc;
 }
+
+.welcome__button-text{
+  font-size: 32px;
+}
+
+@media(min-width: 376px){
+  .button-element{
+    height: 87px;
+    width: 327px;
+    border: 10px solid #001997;
+  }
+  .welcome__button-text{
+    font-size: 42px;
+  }
+
+}
+
 
 .input-element {
   height: 84px;
