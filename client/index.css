@@ -9,6 +9,11 @@
 .odibee-font {
   font-family: "Odibee Sans";
 }
+
+p{
+  margin: 0;
+}
+
 h1,
 h2,
 h3,
@@ -17,24 +22,46 @@ h4 {
 }
 
 h1 {
-  font-size: 60px;
+  font-size: 40px;
 }
 
-h2 {
-  font-size: 40px;
+@media(min-width:376px){
+  h1{
+    font-size:60px;
+  }
+}
+  h2 {
+    font-size: 28px;
+  }
+
+@media(min-width:376px){
+  h2 {
+    font-size: 40px;
+  }
+}
+
+h3{
+  font-size: 38px;
+
+}
+
+@media(min-width:376px){
+  h3 {
+    font-size: 48px;
+  }
 }
 
 body {
   background-image: url(./content/fondo.a5af2b7b.jpg);
   margin: 0;
 }
+
 .root {
   margin: 0;
 }
 
 .div-root {
   margin: 0;
-  /* padding: 10px 10px 0px 10px; */
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -48,6 +75,7 @@ body {
 }
 
 .welcome__main-title {
+  padding-top: 60px;
   margin: 0;
   text-align: center;
   width: 400px;
@@ -56,7 +84,15 @@ body {
 .welcome__form-container {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 20px;
+}
+
+@media(min-width:376px){
+  .welcome__form-container {
+    /* flex-direction: row;
+    justify-content: space-evenly; */
+  }
 }
 
 .hands {
@@ -156,13 +192,31 @@ div,
   gap: 28px;
 }
 
+.espera__main-title {
+  margin: 0;
+  text-align: center;
+  width: 400px;
+}
+
 .espera__header {
   display: flex;
+  position: relative;
   flex-direction: row;
   width: 100%;
-  padding: 20px;
+  height: 120px;
+  padding: 20 20 0 20;
   justify-content: space-between;
   font-size: 25px;
+  max-width: 1200px;
+}
+
+.espera__jugadores{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  height: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 .espera__header-sala-txt {
   font-weight: bolder;

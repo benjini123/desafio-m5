@@ -43,15 +43,15 @@ customElements.define(
         playerOneTrue ? score.player2Score : score.player1Score
       }</p>
         </div>
-        <div>
+        <div class="espera__jugadores">
           <p class="espera__header-sala-txt">SALA</p>
           <p>${roomShortId}</p>
         </div>
       </header>
       <div class="espera__text-box">
-        <h2 class="welcome__main-title rampart-font">Compartí el código:</h2>
+        <h2 class="espera__main-title rampart-font">Compartí el código:</h2>
         <h2>${roomShortId}</h2>
-        <h2 class="welcome__main-title rampart-font">Con tu contrincante</h2>
+        <h2 class="espera__main-title rampart-font">Con tu contrincante</h2>
       </div>
       <div class="hands">
         <play-comp jugada="rock"></play-comp>

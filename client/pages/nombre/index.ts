@@ -38,11 +38,13 @@ customElements.define(
     }
     render() {
       this.innerHTML = `
-      <h2 class="rampart-font welcome__main-title ">Rock paper scissors</h2>
+      <h1 class="rampart-font welcome__main-title ">Rock paper scissors</h1>
       <loader-comp name="loader" class="loader"></loader-comp>
       <form class="welcome__form-container" >
         <div class="welcome__label-input-box">
-          <label for="input" style="font-size:48px" class="odibee-font">tu nombre</label>
+          <label for="input" style="font-size:48px" class="odibee-font">
+            <h3>tu nombre</h3>
+          </label>
           <input id="input" name="input" class="input-element" placeholder="nombre"></input>
         </div>
         <button type="submit" class="button-element" >start</button>
