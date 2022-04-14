@@ -202,8 +202,7 @@ div,
 
 .input-element {
   height: 84px;
-  max-width: 327px;
-  width: 100%;
+  width: 300px;
   font-family: "Odibee Sans";
   font-size: 45px;
   font-weight: 400;
@@ -212,17 +211,21 @@ div,
   padding: 0;
 }
 
-@media (min-width: 375px) {
+@media (min-width: 376px) {
   .input-element{
+    width: 327px;
     border: 10px solid #001997;
   }
 }
 
 .espera__text-box {
+  padding-left: 12px;
+  padding-right: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 28px;
+  width: 100%;
 }
 
 .espera__main-title {
