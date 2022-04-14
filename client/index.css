@@ -72,8 +72,16 @@ body {
 }
 
 .welcome__label-input-box {
+  width: 300px;
   display: flex;
   flex-direction: column;
+}
+
+@media (min-width:376px) {
+  .welcome__label-input-box {
+    width: 327px;
+  }
+  
 }
 
 .welcome__main-title {
@@ -172,6 +180,7 @@ div,
   border: 8px solid #001997;
   border-radius: 10px;
   color: #d8fcfc;
+  font-size: 32px;
 }
 
 .welcome__button-text{
@@ -198,9 +207,15 @@ div,
   font-family: "Odibee Sans";
   font-size: 45px;
   font-weight: 400;
-  border: 10px solid #001997;
+  border: 8px solid #001997;
   border-radius: 10px;
   padding: 0;
+}
+
+@media (min-width: 375px) {
+  .input-element{
+    border: 10px solid #001997;
+  }
 }
 
 .espera__text-box {
